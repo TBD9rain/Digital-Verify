@@ -1,0 +1,5 @@
+../src/adder_8bit.v
+../../lib/msg_print_pkg.sv
+../tb/test_if.sv
+../tb/test_pkg.sv
+../tb/adder_8bit_tb.sv
