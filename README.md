@@ -53,3 +53,11 @@ The checker compare the actual output and reference output.
 The coverage recording is also completed in the checker.
 
 
+# Roadmap
+
+- DUT delay check.
+- `reset` signal in verification components.
+- add parameter in verification component definition.
+- implement module integration with sub-module monitor.
+
+
