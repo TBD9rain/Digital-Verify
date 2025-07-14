@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -477,8 +477,8 @@ class Scoreboard;
                 msg = $sformatf({
                     "Testcase passed:\n",
                     "\tNO.%0d\n",
-                    data_print_str(txn_in, txn_out, txn_ref)},
-                    ptn_cnt);
+                    data_print_str(txn_in, txn_out, txn_ref)
+                    }, ptn_cnt);
 
                 print_msg($typename(this), msg, INFO, MEDIUM, LOG);
             end
@@ -486,8 +486,8 @@ class Scoreboard;
                 msg = $sformatf({
                     "Testcase failed:\n",
                     "\tNO.%0d\n",
-                    data_print_str(txn_in, txn_out, txn_ref)},
-                    ptn_cnt);
+                    data_print_str(txn_in, txn_out, txn_ref)
+                    }, ptn_cnt);
 
                 print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
             end
@@ -500,7 +500,7 @@ class Scoreboard;
         input   OutputTxn   data_out,
         input   OutputTxn   data_ref);
 
-        output_check    = data_out.sum == data_ref.sum;
+        output_check    = data_out.sum === data_ref.sum;
     endfunction
 
     function string data_print_str(
