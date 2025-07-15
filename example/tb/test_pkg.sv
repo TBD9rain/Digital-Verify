@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.1.0
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -30,15 +30,21 @@ import msg_print_pkg::*;
 //  DUT input transaction
 class InputTxn;
     //  variable definition
-    randc   bit [ 7: 0] addend0;
-    randc   bit [ 7: 0] addend1;
+    randc   bit [ 7: 0]     addend0;
+    randc   bit [ 7: 0]     addend1;
+
+    //  timing check variable
+    longint unsigned    timestamp;
 
     function new(
-        input   bit [ 7: 0]   addend0 = 0,
-        input   bit [ 7: 0]   addend1 = 0);
+        input   bit [ 7: 0]         addend0 = 0,
+        input   bit [ 7: 0]         addend1 = 0,
+        input   longint unsigned    timestamp = 0);
 
         this.addend0 = addend0;
         this.addend1 = addend1;
+
+        this.timestamp = timestamp;
     endfunction
 endclass
 
@@ -46,13 +52,42 @@ endclass
 //  DUT output transaction
 class OutputTxn;
     //  variable definition
-    logic   [ 8: 0] sum;
+    logic   [ 8: 0]     sum;
+
+    //  timing check variable
+    longint unsigned    timestamp;
 
     function new(
-        input   logic   [ 7: 0]   sum = 0);
+        input   logic   [ 8: 0]     sum = 0,
+        input   longint unsigned    timestamp = 0);
 
         this.sum = sum;
+
+        this.timestamp = timestamp;
     endfunction
+endclass
+
+
+//  clock counter
+class ClockCnt;
+    virtual interface   test_if.env_mp vif;
+
+    longint unsigned    clk_cnt;
+
+    function new();
+
+        this.clk_cnt    = 0;
+        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+    endfunction
+
+    task run;
+
+        forever begin
+            @vif.env_cb;
+            clk_cnt++;   //  avoid contest with monitors
+            vif.env_cb.clk_cnt  <= clk_cnt;
+        end
+    endtask
 endclass
 
 
@@ -201,18 +236,22 @@ class InputMon;
         string      msg;
         InputTxn    txn_caught;
 
-        bit [ 7: 0] addend0;
-        bit [ 7: 0] addend1;
+        bit [ 7: 0]         addend0;
+        bit [ 7: 0]         addend1;
+
+        longint unsigned    timestamp;
 
         @vif.mon_cb;
         if (vif.mon_cb.data_in_vld) begin
             addend0 = vif.mon_cb.addend0;
             addend1 = vif.mon_cb.addend1;
 
-            txn_caught = new(addend0, addend1);
+            timestamp = vif.mon_cb.clk_cnt;
+
+            txn_caught = new(addend0, addend1, timestamp);
 
             msg = $sformatf({
-                "DUT input pattern caught:\n",
+                "DUT input caught:\n",
                 "\tNO. %0d\n",
                 data_print_str(txn_caught)},
                 ptn_cnt);
@@ -235,7 +274,6 @@ class InputMon;
             }, txn_print.addend0, txn_print.addend1);
     endfunction
 endclass
-
 
 
 //  DUT input agent
@@ -357,18 +395,22 @@ class OutputMon;
     task catch;
 
         string      msg;
-        OutputTxn    txn_caught;
+        OutputTxn   txn_caught;
 
-        bit [ 8: 0] sum;
+        bit [ 8: 0]     sum;
+
+        longint unsigned    timestamp;
 
         @vif.mon_cb;
         if (vif.mon_cb.data_out_vld) begin
             sum = vif.mon_cb.sum;
 
-            txn_caught = new(sum);
+            timestamp = vif.mon_cb.clk_cnt;
+
+            txn_caught = new(sum, timestamp);
 
             msg = $sformatf({
-                "DUT input pattern caught:\n",
+                "DUT output caught:\n",
                 "\tNO. %0d\n",
                 data_print_str(txn_caught)},
                 ptn_cnt);
@@ -412,6 +454,7 @@ class OutputAgent;
     endfunction
 
     task run;
+
         monitor.run;
     endtask
 endclass
@@ -462,6 +505,7 @@ class Scoreboard;
     endfunction
 
     task run;
+
         string  msg;
 
         InputTxn    txn_in;
@@ -473,6 +517,7 @@ class Scoreboard;
             o2score_mbox.get(txn_out);
             ref2score_mbox.get(txn_ref);
 
+            //  output check
             assert (output_check(txn_out, txn_ref)) begin
                 msg = $sformatf({
                     "Testcase passed:\n",
@@ -492,15 +537,34 @@ class Scoreboard;
                 print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
             end
 
+            //  timing check
+            assert (timing_check(txn_in, txn_out))
+            else begin
+                msg = $sformatf({
+                    "Testcase NO. %0d timing error:\n",
+                    "\tinput time : %d\n",
+                    "\toutput time: %d\n"
+                    }, ptn_cnt, txn_in.timestamp, txn_out.timestamp);
+
+                print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
+            end
+
             ptn_cnt++;
         end
     endtask
 
     function bit output_check(
-        input   OutputTxn   data_out,
-        input   OutputTxn   data_ref);
+        input   OutputTxn   txn_out,
+        input   OutputTxn   txn_ref);
 
-        output_check    = data_out.sum === data_ref.sum;
+        output_check    = (txn_out.sum === txn_ref.sum);
+    endfunction
+
+    function bit timing_check(
+        input   InputTxn    txn_in,
+        input   OutputTxn   txn_ref);
+
+        timing_check = (txn_ref.timestamp - txn_in.timestamp) == 1;
     endfunction
 
     function string data_print_str(
@@ -512,9 +576,9 @@ class Scoreboard;
             "\tInput addend0: %03d\n",
             "\tInput addend1: %03d\n",
             "\n",
-            "\tOutput sum   : %03d\n",
-            "\tReference sum: %03d\n"
-            }, txn_in.addend0, txn_in.addend1,txn_out.sum, txn_ref.sum);
+            "\tOutput sum    : %03d\n",
+            "\tReference sum : %03d\n"
+            }, txn_in.addend0, txn_in.addend1, txn_out.sum, txn_ref.sum);
     endfunction
 endclass
 
@@ -523,6 +587,7 @@ endclass
 class TestEnv;
     virtual interface   test_if  vif;
 
+    ClockCnt        clk_cnt;
     InputSeq        seq;
     InputAgent      input_agt;
     CovCollector    cov_coll;
@@ -549,6 +614,7 @@ class TestEnv;
         this.drive_en   = drive_en;
         this.cover_en   = cover_en;
 
+        this.clk_cnt    = new();
         if (this.drive_en) begin
             this.seq    = new();
         end
@@ -575,6 +641,7 @@ class TestEnv;
             seq.seqr    = input_agt.seqr;
         end
 
+        clk_cnt.vif     = vif;
         input_agt.vif   = vif;
         output_agt.vif  = vif;
 
@@ -608,6 +675,7 @@ class TestEnv;
     task run;
 
         fork
+            clk_cnt.run;
             input_agt.run;
             if (cover_en) begin
                 cov_coll.run;
