@@ -55,9 +55,9 @@ The coverage recording is also completed in the checker.
 
 # Roadmap
 
-- DUT delay check.
 - `reset` signal in verification components.
 - add parameter in verification component definition.
+- add functional coverage rate probe in testbench.
 - implement module integration with sub-module monitor.
 
 
