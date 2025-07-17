@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -35,7 +35,9 @@ interface test_if;
         output  clk_cnt;
     endclocking
 
-    modport env_mp (clocking env_cb);
+    modport env_mp (
+        input       rst_n,
+        clocking    env_cb);
 
     //  driver
     clocking drv_cb @(posedge clk);
@@ -47,7 +49,9 @@ interface test_if;
         input   sum;
     endclocking
 
-    modport drv_mp (clocking drv_cb);
+    modport drv_mp (
+        input       rst_n,
+        clocking    drv_cb);
 
     //  monitor
     clocking mon_cb @(posedge clk);
@@ -61,7 +65,9 @@ interface test_if;
         input   sum;
     endclocking
 
-    modport mon_mp (clocking mon_cb);
+    modport mon_mp (
+        input       rst_n,
+        clocking    mon_cb);
 
     //  DUT
     modport dut_mp (

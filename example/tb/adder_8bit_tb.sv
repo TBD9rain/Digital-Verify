@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
@@ -86,16 +86,9 @@ initial begin
     end
 end
 
-//  initial reset
-initial begin
-    rst_n = 1'b0;
-    #1000;
-    rst_n = 1'b1;
-end
-
 //  verification environment
 initial begin
-    svrt_thold = MEDIUM;
+    svrt_thold = HIGH;
     clean_msg_log;
 
     print_msg("Testbench", "verification starts.\n", INFO, HIGHEST, LOG);
@@ -116,10 +109,19 @@ end
 
 //  verification testcases
 initial begin
+    rst_n = 1'b0;
+    #1000;
+    rst_n = 1'b1;
+
     #5000;
     print_msg("Testbench", "add random testcases...", INFO, HIGHEST, LOG);
     tb_env.add_random_tc(10000);
     $write("\n");
+
+    #55;
+    rst_n = 1'b0;
+    #100;
+    rst_n = 1'b1;
 
     @tb_env.tc_done;
     #1000;

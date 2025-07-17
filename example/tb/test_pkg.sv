@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.2.0
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -184,15 +184,18 @@ class InputDrv;
         InputTxn    tc_txn;
 
         forever begin
-            seqr.get(tc_txn);
-            assert (tc_txn) begin
-                drive(tc_txn);
+            @vif.drv_cb;
+            if (~vif.rst_n) begin
+                no_drive;
             end
             else begin
-                @vif.drv_cb;
-                vif.drv_cb.data_in_vld  <= 1'b0;
-                vif.drv_cb.addend0      <= 'b0;
-                vif.drv_cb.addend1      <= 'b0;
+                seqr.get(tc_txn);
+                assert (tc_txn) begin
+                    drive(tc_txn);
+                end
+                else begin
+                    no_drive;
+                end
             end
         end
     endtask
@@ -200,10 +203,15 @@ class InputDrv;
     task drive(
         input   InputTxn    tc_txn);
 
-        @vif.drv_cb;
         vif.drv_cb.data_in_vld  <= 1'b1;
         vif.drv_cb.addend0      <= tc_txn.addend0;
         vif.drv_cb.addend1      <= tc_txn.addend1;
+    endtask
+
+    task no_drive;
+        vif.drv_cb.data_in_vld  <= 1'b0;
+        vif.drv_cb.addend0      <= 'b0;
+        vif.drv_cb.addend1      <= 'b0;
     endtask
 endclass
 
@@ -227,6 +235,10 @@ class InputMon;
     task run;
 
         forever begin
+            @vif.mon_cb;
+            if (~vif.rst_n) begin
+                continue;
+            end
             catch;
         end
     endtask
@@ -241,7 +253,6 @@ class InputMon;
 
         longint unsigned    timestamp;
 
-        @vif.mon_cb;
         if (vif.mon_cb.data_in_vld) begin
             addend0 = vif.mon_cb.addend0;
             addend1 = vif.mon_cb.addend1;
@@ -344,8 +355,7 @@ class CovCollector;
         //  coverage point definition
         addend0: coverpoint txn_data.addend0 {
             //  bins definition
-            bins a0 = {[  0:127]};
-            bins a1 = {[128:255]};
+            bins a[] = {[  0:255]};
         }
         addend1: coverpoint txn_data.addend1 {
             //  bins definition
@@ -388,6 +398,10 @@ class OutputMon;
     task run;
 
         forever begin
+            @vif.mon_cb;
+            if (~vif.rst_n) begin
+                continue;
+            end
             catch;
         end
     endtask
@@ -401,7 +415,6 @@ class OutputMon;
 
         longint unsigned    timestamp;
 
-        @vif.mon_cb;
         if (vif.mon_cb.data_out_vld) begin
             sum = vif.mon_cb.sum;
 
@@ -492,6 +505,8 @@ endclass
 
 //  DUT output scoreboard
 class Scoreboard;
+    virtual interface   test_if.env vif;
+
     mailbox #(InputTxn)     i2score_mbox;
     mailbox #(OutputTxn)    o2score_mbox;
     mailbox #(OutputTxn)    ref2score_mbox;
@@ -513,8 +528,30 @@ class Scoreboard;
         OutputTxn   txn_ref;
 
         forever begin
-            i2score_mbox.get(txn_in);
+            @vif.env_cb;
+            if (~vif.rst_n && o2score_mbox.num() == 0) begin
+                //  clear mailbox
+                while (i2score_mbox.try_get(txn_in)) begin
+                    msg = $sformatf({
+                        "Testcase ABORTED due to reset:\n",
+                        "\tNO.%0d\n",
+                        data_print_str(txn_in, null, null)
+                        }, ptn_cnt);
+                    ptn_cnt++;
+
+                    print_msg($typename(this), msg, WARN, HIGH, LOG);
+                end
+                while (ref2score_mbox.try_get(txn_ref)) begin end
+
+                txn_out = null;
+                txn_in  = null;
+                txn_ref = null;
+
+                continue;
+            end
+
             o2score_mbox.get(txn_out);
+            i2score_mbox.get(txn_in);
             ref2score_mbox.get(txn_ref);
 
             //  output check
@@ -568,17 +605,30 @@ class Scoreboard;
     endfunction
 
     function string data_print_str(
-        input   InputTxn    txn_in,
-        input   OutputTxn   txn_out,
-        input   OutputTxn   txn_ref);
+        input   InputTxn    txn_in  = null,
+        input   OutputTxn   txn_out = null,
+        input   OutputTxn   txn_ref = null);
 
-        data_print_str  = $sformatf({
-            "\tInput addend0: %03d\n",
-            "\tInput addend1: %03d\n",
-            "\n",
-            "\tOutput sum    : %03d\n",
-            "\tReference sum : %03d\n"
-            }, txn_in.addend0, txn_in.addend1, txn_out.sum, txn_ref.sum);
+        string  str_in  = "";
+        string  str_out = "";
+        string  str_ref = "";
+
+        if (txn_in) begin
+            str_in  = $sformatf({
+                "\tInput addend0: %03d\n",
+                "\tInput addend1: %03d\n"
+                }, txn_in.addend0, txn_in.addend1);
+        end
+
+        if (txn_out) begin
+            str_out = $sformatf({"\tOutput sum   : %03d\n"}, txn_out.sum);
+        end
+
+        if (txn_ref) begin
+            str_ref = $sformatf({"\tReference sum: %03d\n"}, txn_ref.sum);
+        end
+
+        data_print_str  = $sformatf({str_in, "\n", str_out, str_ref});
     endfunction
 endclass
 
@@ -626,7 +676,9 @@ class TestEnv;
         this.ref_mdl    = new();
         this.scr_brd    = new();
 
-        this.i2cov_mbox     = new();
+        if (this.cover_en) begin
+            this.i2cov_mbox       = new();
+        end
         this.i2ref_mbox     = new();
         this.i2score_mbox   = new();
         this.o2score_mbox   = new();
@@ -644,6 +696,7 @@ class TestEnv;
         clk_cnt.vif     = vif;
         input_agt.vif   = vif;
         output_agt.vif  = vif;
+        scr_brd.vif     = vif;
 
         input_agt.i2cov_mbox    = i2cov_mbox;
         input_agt.i2ref_mbox    = i2ref_mbox;
