@@ -1,13 +1,13 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
 //
 //  Additional info :
-//  Author          :   shi_l
+//  Author          :   TBD9rain
 //  Email           :
 //
 //==================================================================================================
@@ -20,10 +20,11 @@ module  adder_tb;
 //  PARAMETER DEFINITION
 //======================
 
-parameter   CLK_HALF_PERIOD = 10/2;
+//  DUT
+parameter   DATA_WIDTH  = 8;
 
-parameter   DATA_WIDTH      = 8;
-
+//  verification
+parameter   CLK_HALF_PERIOD     = 10/2;
 parameter   MAX_RAND_ITERATION  = 100;
 
 
@@ -32,6 +33,7 @@ parameter   MAX_RAND_ITERATION  = 100;
 //=====================
 
 import msg_print_pkg::*;
+
 import test_pkg::*;
 
 
@@ -39,20 +41,14 @@ import test_pkg::*;
 //  VARIABLE DEFINITION
 //=====================
 
-bit         clk;
-bit         rst_n;
+bit clk;
+bit rst_n;
 
 real    coverage_rate = 0;
 int     num_bins_covered = 0;
 int     num_bins_total = 0;
 
 int i;
-
-//  test environment class
-TestEnv #(
-    .DATA_IN_WIDTH  (DATA_WIDTH),
-    .DATA_OUT_WIDTH (DATA_WIDTH + 1))
-tb_env;
 
 
 //=========================
@@ -80,6 +76,16 @@ u_dut(
 
     .data_out_vld   (tb_if.data_out_vld),
     .data_out       (tb_if.sum));
+
+
+//================================
+//  TEST ENVIRONMENT INSTANTIATION
+//================================
+
+TestEnv #(
+    .DATA_IN_WIDTH  (DATA_WIDTH),
+    .DATA_OUT_WIDTH (DATA_WIDTH + 1))
+tb_env;
 
 
 //===========================
@@ -123,7 +129,7 @@ initial begin
     $write("\n");
 end
 
-//  verification testcases
+//  verification stimulation
 initial begin
     rst_n = 1'b0;
     #1000;
