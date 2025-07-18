@@ -8,7 +8,7 @@ set sim_time        1000
 # radiant pmi source library
 # set pmi_lib         D:/lscc/radiant/3.2/ip/pmi
 
-set tb_module       adder_8bit_tb
+set tb_module       adder_tb
 set wave_do         wave.do
 
 # 1. QUIT SIMULATION & CLEAR COMMAND LINES

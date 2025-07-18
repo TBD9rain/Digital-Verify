@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.2
+//  Version         :   v1.0.3
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -12,7 +12,8 @@
 //
 //==================================================================================================
 
-interface test_if;
+interface test_if #(
+    parameter   DATA_WIDTH  = 8);
 
     logic   clk;
     logic   rst_n;
@@ -23,12 +24,12 @@ interface test_if;
     longint unsigned    clk_cnt;
 
     //  DUT IO port
-    logic           data_in_vld;
-    logic   [ 7: 0] addend0;
-    logic   [ 7: 0] addend1;
+    logic                       data_in_vld;
+    logic   [DATA_WIDTH - 1: 0] addend0;
+    logic   [DATA_WIDTH - 1: 0] addend1;
 
-    logic           data_out_vld;
-    logic   [ 8: 0] sum;
+    logic                   data_out_vld;
+    logic   [DATA_WIDTH: 0] sum;
 
     //  environment
     clocking env_cb @(posedge clk);

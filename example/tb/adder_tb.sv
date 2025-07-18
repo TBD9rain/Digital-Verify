@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.2
+//  Version         :   v1.0.3
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
@@ -14,13 +14,15 @@
 
 `timescale 1ns/100ps
 
-module  adder_8bit_tb;
+module  adder_tb;
 
 //======================
 //  PARAMETER DEFINITION
 //======================
 
 parameter   CLK_HALF_PERIOD = 10/2;
+
+parameter   DATA_WIDTH      = 8;
 
 
 //=====================
@@ -39,21 +41,27 @@ bit         clk;
 bit         rst_n;
 
 //  test environment class
-TestEnv     tb_env;
+TestEnv #(
+    .DATA_IN_WIDTH  (DATA_WIDTH),
+    .DATA_OUT_WIDTH (DATA_WIDTH + 1))
+tb_env;
 
 
 //=========================
 //  INTERFACE INSTANTIATION
 //=========================
 
-test_if tb_if();
+test_if #(
+    .DATA_WIDTH (DATA_WIDTH))
+tb_if();
 
 
 //===================
 //  DUT INSTANTIATION
 //===================
 
-adder_8bit
+adder #(
+    .DATA_WIDTH (DATA_WIDTH))
 u_dut(
     .clk    (tb_if.clk),
     .rst_n  (tb_if.rst_n),

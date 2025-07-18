@@ -1,12 +1,12 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /adder_8bit_tb/u_dut/clk
-add wave -noupdate /adder_8bit_tb/u_dut/rst_n
-add wave -noupdate /adder_8bit_tb/u_dut/data_in_vld
-add wave -noupdate /adder_8bit_tb/u_dut/data_in0
-add wave -noupdate /adder_8bit_tb/u_dut/data_in1
-add wave -noupdate /adder_8bit_tb/u_dut/data_out_vld
-add wave -noupdate /adder_8bit_tb/u_dut/data_out
+add wave -noupdate /adder_tb/u_dut/clk
+add wave -noupdate /adder_tb/u_dut/rst_n
+add wave -noupdate /adder_tb/u_dut/data_in_vld
+add wave -noupdate /adder_tb/u_dut/data_in0
+add wave -noupdate /adder_tb/u_dut/data_in1
+add wave -noupdate /adder_tb/u_dut/data_out_vld
+add wave -noupdate /adder_tb/u_dut/data_out
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors
 quietly wave cursor active 0

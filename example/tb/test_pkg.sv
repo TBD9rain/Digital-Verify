@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.2.0
+//  Version         :   v1.3.0
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -28,18 +28,20 @@ import msg_print_pkg::*;
 
 
 //  DUT input transaction
-class InputTxn;
+class InputTxn #(
+    parameter   DATA_WIDTH  = 8);
+
     //  variable definition
-    randc   bit [ 7: 0]     addend0;
-    randc   bit [ 7: 0]     addend1;
+    randc   bit [DATA_WIDTH - 1: 0] addend0;
+    randc   bit [DATA_WIDTH - 1: 0] addend1;
 
     //  timing check variable
     longint unsigned    timestamp;
 
     function new(
-        input   bit [ 7: 0]         addend0 = 0,
-        input   bit [ 7: 0]         addend1 = 0,
-        input   longint unsigned    timestamp = 0);
+        input   bit [DATA_WIDTH - 1: 0] addend0 = 0,
+        input   bit [DATA_WIDTH - 1: 0] addend1 = 0,
+        input   longint unsigned        timestamp = 0);
 
         this.addend0 = addend0;
         this.addend1 = addend1;
@@ -50,16 +52,18 @@ endclass
 
 
 //  DUT output transaction
-class OutputTxn;
+class OutputTxn #(
+    parameter   DATA_WIDTH = 9);
+
     //  variable definition
-    logic   [ 8: 0]     sum;
+    logic   [DATA_WIDTH - 1: 0] sum;
 
     //  timing check variable
     longint unsigned    timestamp;
 
     function new(
-        input   logic   [ 8: 0]     sum = 0,
-        input   longint unsigned    timestamp = 0);
+        input   logic   [DATA_WIDTH - 1: 0] sum = 0,
+        input   longint unsigned            timestamp = 0);
 
         this.sum = sum;
 
@@ -92,8 +96,12 @@ endclass
 
 
 //  testcase sequencer
-class InputSeqr;
-    mailbox #(InputTxn) seqr_mbox;
+class InputSeqr #(
+    parameter   DATA_WIDTH  = 8);
+
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
+    mailbox #(INPUT_TXN) seqr_mbox;
 
     longint unsigned    txn_num;
 
@@ -107,14 +115,14 @@ class InputSeqr;
     endfunction
 
     task put(
-        input   InputTxn    txn_data);
+        input   INPUT_TXN   txn_data);
 
         seqr_mbox.put(txn_data);
         txn_num++;
     endtask
 
     task get(
-        output  InputTxn    txn_data);
+        output  INPUT_TXN   txn_data);
 
         assert (txn_num > 0) begin
             seqr_mbox.get(txn_data);
@@ -136,7 +144,11 @@ endclass
 
 
 //  testcase sequence
-class InputSeq;
+class InputSeq #(
+    parameter   DATA_WIDTH  = 8);
+
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
     InputSeqr seqr;
 
     function new();
@@ -147,7 +159,7 @@ class InputSeq;
     task gen_rand_tc(
         input   longint unsigned    tc_num = 1);
 
-        InputTxn    txn_data;
+        INPUT_TXN   txn_data;
 
         for(int i = 0; i < tc_num; i++) begin
             txn_data    = new();
@@ -161,7 +173,7 @@ class InputSeq;
     endtask
 
     task add_case(
-        input   InputTxn    txn_data);
+        input   INPUT_TXN   txn_data);
 
         seqr.put(txn_data);
     endtask
@@ -169,7 +181,11 @@ endclass
 
 
 //  DUT input driver
-class InputDrv;
+class InputDrv #(
+    parameter   DATA_WIDTH  = 8);
+
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
     virtual interface   test_if.drv_mp  vif;
 
     InputSeqr   seqr;
@@ -181,7 +197,7 @@ class InputDrv;
 
     task run;
 
-        InputTxn    tc_txn;
+        INPUT_TXN   tc_txn;
 
         forever begin
             @vif.drv_cb;
@@ -201,7 +217,7 @@ class InputDrv;
     endtask
 
     task drive(
-        input   InputTxn    tc_txn);
+        input   INPUT_TXN   tc_txn);
 
         vif.drv_cb.data_in_vld  <= 1'b1;
         vif.drv_cb.addend0      <= tc_txn.addend0;
@@ -217,12 +233,16 @@ endclass
 
 
 //  DUT input monitor
-class InputMon;
+class InputMon #(
+    parameter   DATA_WIDTH  = 8);
+
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
     virtual interface   test_if.mon_mp  vif;
 
-    mailbox #(InputTxn) i2cov_mbox;
-    mailbox #(InputTxn) i2ref_mbox;
-    mailbox #(InputTxn) i2score_mbox;
+    mailbox #(INPUT_TXN)    i2cov_mbox;
+    mailbox #(INPUT_TXN)    i2ref_mbox;
+    mailbox #(INPUT_TXN)    i2score_mbox;
 
     longint unsigned    ptn_cnt;
 
@@ -246,10 +266,10 @@ class InputMon;
     task catch;
 
         string      msg;
-        InputTxn    txn_caught;
+        INPUT_TXN   txn_caught;
 
-        bit [ 7: 0]         addend0;
-        bit [ 7: 0]         addend1;
+        bit [DATA_WIDTH - 1: 0] addend0;
+        bit [DATA_WIDTH - 1: 0] addend1;
 
         longint unsigned    timestamp;
 
@@ -277,7 +297,7 @@ class InputMon;
     endtask
 
     function string data_print_str(
-        input   InputTxn    txn_print);
+        input   INPUT_TXN   txn_print);
 
         data_print_str  = $sformatf({
             "\taddend0: %03d\n",
@@ -288,16 +308,20 @@ endclass
 
 
 //  DUT input agent
-class InputAgent;
+class InputAgent #(
+    parameter   DATA_WIDTH  = 8);
+
+    typedef InputTxn #( .DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
     virtual interface   test_if vif;
 
-    InputSeqr   seqr;
-    InputDrv    driver;
-    InputMon    monitor;
+    InputSeqr   #(.DATA_WIDTH (DATA_WIDTH)) seqr;
+    InputDrv    #(.DATA_WIDTH (DATA_WIDTH)) driver;
+    InputMon    #(.DATA_WIDTH (DATA_WIDTH)) monitor;
 
-    mailbox #(InputTxn) i2cov_mbox;
-    mailbox #(InputTxn) i2ref_mbox;
-    mailbox #(InputTxn) i2score_mbox;
+    mailbox #(INPUT_TXN)    i2cov_mbox;
+    mailbox #(INPUT_TXN)    i2ref_mbox;
+    mailbox #(INPUT_TXN)    i2score_mbox;
 
     bit drive_en;
 
@@ -345,10 +369,14 @@ endclass
 
 
 //  testcase coverage collector
-class CovCollector;
-    mailbox #(InputTxn) i2cov_mbox;
+class CovCollector #(
+    parameter   DATA_WIDTH  = 8);
 
-    InputTxn    txn_data;
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
+
+    mailbox #(INPUT_TXN)    i2cov_mbox;
+
+    INPUT_TXN   txn_data;
 
     //  coverage group definition
     covergroup  adder_8bit_tc;
@@ -382,10 +410,14 @@ endclass
 
 
 //  DUT output monitor
-class OutputMon;
+class OutputMon #(
+    parameter   DATA_WIDTH  = 9);
+
+    typedef OutputTxn #(.DATA_WIDTH (DATA_WIDTH)) OUTPUT_TXN;
+
     virtual interface   test_if.mon_mp  vif;
 
-    mailbox #(OutputTxn) o2score_mbox;
+    mailbox #(OUTPUT_TXN)   o2score_mbox;
 
     longint unsigned    ptn_cnt;
 
@@ -409,9 +441,9 @@ class OutputMon;
     task catch;
 
         string      msg;
-        OutputTxn   txn_caught;
+        OUTPUT_TXN  txn_caught;
 
-        bit [ 8: 0]     sum;
+        bit [DATA_WIDTH - 1: 0] sum;
 
         longint unsigned    timestamp;
 
@@ -436,7 +468,7 @@ class OutputMon;
     endtask
 
     function string data_print_str(
-        input   OutputTxn    txn_print);
+        input   OUTPUT_TXN  txn_print);
 
         data_print_str  = $sformatf({
             "\tsum: %03d\n"
@@ -446,12 +478,16 @@ endclass
 
 
 //  DUT output agent
-class OutputAgent;
+class OutputAgent #(
+    parameter   DATA_WIDTH  = 9);
+
+    typedef OutputTxn #(.DATA_WIDTH (DATA_WIDTH)) OUTPUT_TXN;
+
     virtual interface   test_if vif;
 
-    OutputMon   monitor;
+    OutputMon #(.DATA_WIDTH (DATA_WIDTH)) monitor;
 
-    mailbox #(OutputTxn)    o2score_mbox;
+    mailbox #(OUTPUT_TXN)   o2score_mbox;
 
     function new();
 
@@ -474,9 +510,15 @@ endclass
 
 
 //  DUT reference model
-class RefModel;
-    mailbox #(InputTxn)     i2ref_mbox;
-    mailbox #(OutputTxn)    ref2score_mbox;
+class RefModel #(
+    parameter   DATA_IN_WIDTH   = 8,
+    parameter   DATA_OUT_WIDTH  = 9);
+
+    typedef InputTxn    #(.DATA_WIDTH (DATA_IN_WIDTH))  INPUT_TXN;
+    typedef OutputTxn   #(.DATA_WIDTH (DATA_OUT_WIDTH)) OUTPUT_TXN;
+
+    mailbox #(INPUT_TXN)    i2ref_mbox;
+    mailbox #(OUTPUT_TXN)   ref2score_mbox;
 
     function new();
 
@@ -484,8 +526,8 @@ class RefModel;
     endfunction
 
     task run;
-        InputTxn    txn_in;
-        OutputTxn   txn_ref;
+        INPUT_TXN   txn_in;
+        OUTPUT_TXN  txn_ref;
 
         forever begin
             i2ref_mbox.get(txn_in);
@@ -495,8 +537,8 @@ class RefModel;
     endtask
 
     task adder(
-        input   InputTxn    txn_in,
-        output  OutputTxn   txn_ref);
+        input   INPUT_TXN   txn_in,
+        output  OUTPUT_TXN  txn_ref);
 
         txn_ref = new(txn_in.addend0 + txn_in.addend1);
     endtask
@@ -504,12 +546,18 @@ endclass
 
 
 //  DUT output scoreboard
-class Scoreboard;
+class Scoreboard #(
+    parameter   DATA_IN_WIDTH   = 8,
+    parameter   DATA_OUT_WIDTH  = 9);
+
+    typedef InputTxn    #(.DATA_WIDTH (DATA_IN_WIDTH))  INPUT_TXN;
+    typedef OutputTxn   #(.DATA_WIDTH (DATA_OUT_WIDTH)) OUTPUT_TXN;
+
     virtual interface   test_if.env vif;
 
-    mailbox #(InputTxn)     i2score_mbox;
-    mailbox #(OutputTxn)    o2score_mbox;
-    mailbox #(OutputTxn)    ref2score_mbox;
+    mailbox #(INPUT_TXN)    i2score_mbox;
+    mailbox #(OUTPUT_TXN)   o2score_mbox;
+    mailbox #(OUTPUT_TXN)   ref2score_mbox;
 
     longint unsigned    ptn_cnt;
 
@@ -523,9 +571,9 @@ class Scoreboard;
 
         string  msg;
 
-        InputTxn    txn_in;
-        OutputTxn   txn_out;
-        OutputTxn   txn_ref;
+        INPUT_TXN   txn_in;
+        OUTPUT_TXN  txn_out;
+        OUTPUT_TXN  txn_ref;
 
         forever begin
             @vif.env_cb;
@@ -591,23 +639,23 @@ class Scoreboard;
     endtask
 
     function bit output_check(
-        input   OutputTxn   txn_out,
-        input   OutputTxn   txn_ref);
+        input   OUTPUT_TXN  txn_out,
+        input   OUTPUT_TXN  txn_ref);
 
         output_check    = (txn_out.sum === txn_ref.sum);
     endfunction
 
     function bit timing_check(
-        input   InputTxn    txn_in,
-        input   OutputTxn   txn_ref);
+        input   INPUT_TXN   txn_in,
+        input   OUTPUT_TXN  txn_ref);
 
         timing_check = (txn_ref.timestamp - txn_in.timestamp) == 1;
     endfunction
 
     function string data_print_str(
-        input   InputTxn    txn_in  = null,
-        input   OutputTxn   txn_out = null,
-        input   OutputTxn   txn_ref = null);
+        input   INPUT_TXN   txn_in  = null,
+        input   OUTPUT_TXN  txn_out = null,
+        input   OUTPUT_TXN  txn_ref = null);
 
         string  str_in  = "";
         string  str_out = "";
@@ -634,23 +682,37 @@ endclass
 
 
 //  test environment
-class TestEnv;
+class TestEnv #(
+    parameter   DATA_IN_WIDTH   = 8,
+    parameter   DATA_OUT_WIDTH  = 9);
+
+    typedef InputTxn    #(.DATA_WIDTH (DATA_IN_WIDTH))  INPUT_TXN;
+    typedef OutputTxn   #(.DATA_WIDTH (DATA_OUT_WIDTH)) OUTPUT_TXN;
+
     virtual interface   test_if  vif;
 
-    ClockCnt        clk_cnt;
-    InputSeq        seq;
-    InputAgent      input_agt;
-    CovCollector    cov_coll;
-    OutputAgent     output_agt;
-    RefModel        ref_mdl;
-    Scoreboard      scr_brd;
+    ClockCnt    clk_cnt;
 
-    mailbox #(InputTxn) i2cov_mbox;
-    mailbox #(InputTxn) i2ref_mbox;
-    mailbox #(InputTxn) i2score_mbox;
+    InputSeq        #(.DATA_WIDTH (DATA_IN_WIDTH))  seq;
+    InputAgent      #(.DATA_WIDTH (DATA_IN_WIDTH))  input_agt;
+    CovCollector    #(.DATA_WIDTH (DATA_IN_WIDTH))  cov_coll;
+    OutputAgent     #(.DATA_WIDTH (DATA_OUT_WIDTH)) output_agt;
 
-    mailbox #(OutputTxn)    o2score_mbox;
-    mailbox #(OutputTxn)    ref2score_mbox;
+    RefModel #(
+        .DATA_IN_WIDTH  (DATA_IN_WIDTH),
+        .DATA_OUT_WIDTH (DATA_OUT_WIDTH))
+        ref_mdl;
+    Scoreboard #(
+        .DATA_IN_WIDTH  (DATA_IN_WIDTH),
+        .DATA_OUT_WIDTH (DATA_OUT_WIDTH))
+        scr_brd;
+
+    mailbox #(INPUT_TXN)    i2cov_mbox;
+    mailbox #(INPUT_TXN)    i2ref_mbox;
+    mailbox #(INPUT_TXN)    i2score_mbox;
+
+    mailbox #(OUTPUT_TXN)   o2score_mbox;
+    mailbox #(OUTPUT_TXN)   ref2score_mbox;
 
     event   tc_done;
 
@@ -740,7 +802,7 @@ class TestEnv;
     endtask
 
     task add_case(
-        InputTxn    txn_data);
+        INPUT_TXN   txn_data);
 
         seq.add_case(txn_data);
     endtask

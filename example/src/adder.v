@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
-//  Title           :   adder_8bit
+//  Version         :   v1.1.0
+//  Title           :   adder
 //
 //  Description     :   2 8-bit input adder
 //
@@ -12,16 +12,18 @@
 //
 //==================================================================================================
 
-module adder_8bit(
+module adder #(
+    parameter   DATA_WIDTH  = 8)
+(
     input   clk,
     input   rst_n,
 
-    input               data_in_vld,
-    input   [ 7: 0]     data_in0,
-    input   [ 7: 0]     data_in1,
+    input                       data_in_vld,
+    input   [DATA_WIDTH - 1: 0] data_in0,
+    input   [DATA_WIDTH - 1: 0] data_in1,
 
-    output  reg                 data_out_vld,
-    output  reg     [ 8: 0]     data_out);
+    output  reg                     data_out_vld,
+    output  reg     [DATA_WIDTH: 0] data_out);
 
 
 //===============
