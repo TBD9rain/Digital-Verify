@@ -55,7 +55,6 @@ The coverage recording is also completed in the checker.
 
 # Roadmap
 
-- add functional coverage rate probe in testbench.
 - implement module integration with sub-module monitor.
 
 
