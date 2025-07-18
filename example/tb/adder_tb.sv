@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.3
+//  Version         :   v1.1.0
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
@@ -24,6 +24,8 @@ parameter   CLK_HALF_PERIOD = 10/2;
 
 parameter   DATA_WIDTH      = 8;
 
+parameter   MAX_RAND_ITERATION  = 100;
+
 
 //=====================
 //  PACKAGE IMPORTATION
@@ -39,6 +41,12 @@ import test_pkg::*;
 
 bit         clk;
 bit         rst_n;
+
+real    coverage_rate = 0;
+int     num_bins_covered = 0;
+int     num_bins_total = 0;
+
+int i;
 
 //  test environment class
 TestEnv #(
@@ -123,7 +131,7 @@ initial begin
 
     #5000;
     print_msg("Testbench", "add random testcases...", INFO, HIGHEST, LOG);
-    tb_env.add_random_tc(10000);
+    tb_env.add_random_tc(10);
     $write("\n");
 
     #55;
@@ -133,6 +141,32 @@ initial begin
 
     @tb_env.tc_done;
     #1000;
+
+    i = 0;
+    while (coverage_rate < 99.99 && i < MAX_RAND_ITERATION) begin
+        print_msg("Testbench", "add random testcases...", INFO, HIGHEST, LOG);
+        tb_env.add_random_tc(100);
+        $write("\n");
+
+        @tb_env.tc_done;
+        #1000;
+
+        coverage_rate = tb_env.get_coverage(num_bins_covered, num_bins_total);
+        print_msg("Testbench", $sformatf({
+            "Iteration NO.%0d, DUT input coverage:\n",
+            "\tcoverage rate: %0.4f\%\n",
+            "\tbins covered : %0d\n",
+            "\tbins total   : %0d\n"
+            }, i, coverage_rate, num_bins_covered, num_bins_total), INFO, HIGH, LOG);
+        if (coverage_rate == 100) begin
+            print_msg("Testbench", "coverage rate: 100.0%.\n", INFO, HIGHEST, LOG);
+            break;
+        end
+        i++;
+        if (i >= MAX_RAND_ITERATION) begin
+            print_msg("Testbench", "reached maximum of random testcase iteration.\n", INFO, HIGHEST, LOG);
+        end
+    end
     print_msg("Testbench", "verification ends.\n", INFO, HIGHEST, LOG);
     $stop(2);
 end

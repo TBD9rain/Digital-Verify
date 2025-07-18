@@ -18,8 +18,6 @@ interface test_if #(
     logic   clk;
     logic   rst_n;
 
-    //  parameter
-
     //  environment variable
     longint unsigned    clk_cnt;
 

@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.3.0
+//  Version         :   v1.3.1
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -406,6 +406,13 @@ class CovCollector #(
             adder_8bit_tc.sample();
         end
     endtask
+
+    function real get_coverage(
+        ref int num_bins_covered,
+        ref int num_bins_total);
+
+        get_coverage = adder_8bit_tc.get_coverage(num_bins_covered, num_bins_total);
+    endfunction
 endclass
 
 
@@ -812,6 +819,13 @@ class TestEnv #(
 
         seq.gen_rand_tc(case_num);
     endtask
+
+    function real get_coverage(
+        ref int num_bins_covered,
+        ref int num_bins_total);
+
+        get_coverage = cov_coll.get_coverage(num_bins_covered, num_bins_total);
+    endfunction
 endclass
 
 
