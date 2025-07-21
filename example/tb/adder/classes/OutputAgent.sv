@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify  Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   OutputAgent
 //
 //  Description     :   DUT output agent
@@ -18,7 +18,7 @@ class OutputAgent #(
     //  input transaction class
     typedef OutputTxn #(.DATA_WIDTH (DATA_WIDTH)) OUTPUT_TXN;
 
-    virtual interface test_if vif;
+    virtual interface adder_if vif;
 
     OutputMon #(.DATA_WIDTH (DATA_WIDTH)) monitor;
 

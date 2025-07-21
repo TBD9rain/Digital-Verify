@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   TestEnv
 //
 //  Description     :   test environment
@@ -20,7 +20,7 @@ class TestEnv #(
     typedef InputTxn #(.DATA_WIDTH (DATA_IN_WIDTH)) INPUT_TXN;
     typedef OutputTxn #(.DATA_WIDTH (DATA_OUT_WIDTH)) OUTPUT_TXN;
 
-    virtual interface test_if vif;
+    virtual interface adder_if vif;
 
     ClockCnt clk_cnt;
 

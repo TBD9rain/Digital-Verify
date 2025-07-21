@@ -1,10 +1,10 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
-//  Title           :   OutputMon
+//  Version         :   v1.0.1
+//  Title           :   InputMon
 //
-//  Description     :   DUT output monitor
+//  Description     :   DUT input monitor
 //
 //  Additional info :
 //  Author          :   TBD9rain
@@ -12,15 +12,17 @@
 //
 //==================================================================================================
 
-class OutputMon #(
-    parameter DATA_WIDTH = 9);
+class InputMon #(
+    parameter DATA_WIDTH = 8);
 
     //  input transaction class
-    typedef OutputTxn #(.DATA_WIDTH (DATA_WIDTH)) OUTPUT_TXN;
+    typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
 
-    virtual interface test_if.mon_mp vif;
+    virtual interface adder_if.mon_mp vif;
 
-    mailbox #(OUTPUT_TXN) o2score_mbox;
+    mailbox #(INPUT_TXN) i2cov_mbox;
+    mailbox #(INPUT_TXN) i2ref_mbox;
+    mailbox #(INPUT_TXN) i2score_mbox;
 
     longint unsigned ptn_cnt;
 
@@ -41,18 +43,20 @@ class OutputMon #(
 
     task catch;
         string msg;
-        OUTPUT_TXN txn_caught;
+        INPUT_TXN txn_caught;
 
-        bit [DATA_WIDTH - 1: 0] sum;
+        bit [DATA_WIDTH - 1: 0] addend0;
+        bit [DATA_WIDTH - 1: 0] addend1;
 
         longint unsigned timestamp;
 
-        if (vif.mon_cb.data_out_vld) begin
-            sum = vif.mon_cb.sum;
+        if (vif.mon_cb.data_in_vld) begin
+            addend0 = vif.mon_cb.addend0;
+            addend1 = vif.mon_cb.addend1;
 
             timestamp = vif.mon_cb.clk_cnt;
 
-            txn_caught = new(sum, timestamp);
+            txn_caught = new(addend0, addend1, timestamp);
 
             msg = $sformatf({
                 "DUT input pattern caught:\n",
@@ -61,18 +65,21 @@ class OutputMon #(
                 ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
-            o2score_mbox.put(txn_caught);
+            i2cov_mbox.put(txn_caught);
+            i2ref_mbox.put(txn_caught);
+            i2score_mbox.put(txn_caught);
 
             ptn_cnt++;
         end
     endtask
 
     function string data_print_str(
-        input OUTPUT_TXN txn_print);
+        input INPUT_TXN txn_print);
 
         data_print_str  = $sformatf({
-            "\tsum: %03d\n"
-            }, txn_print.sum);
+            "\taddend0: %03d\n",
+            "\taddend1: %03d\n"
+            }, txn_print.addend0, txn_print.addend1);
     endfunction
 endclass
 

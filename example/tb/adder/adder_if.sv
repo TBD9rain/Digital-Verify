@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.3
+//  Version         :   v1.0.4
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -12,7 +12,7 @@
 //
 //==================================================================================================
 
-interface test_if #(
+interface adder_if #(
     parameter   DATA_WIDTH  = 8);
 
     logic   clk;

@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.3.1
+//  Version         :   v1.3.2
 //  Title           :   test_pkg
 //
 //  Description     :   test component definition
@@ -12,7 +12,7 @@
 //
 //==================================================================================================
 
-package test_pkg;
+package adder_pkg;
 
 //=====================
 //  PACKAGE IMPORTATION
@@ -26,20 +26,20 @@ import msg_print_pkg::*;
 //=========================
 
 
-`include "InputTxn.sv"
-`include "OutputTxn.sv"
-`include "ClockCnt.sv"
-`include "InputSeqr.sv"
-`include "InputSeq.sv"
-`include "InputDrv.sv"
-`include "InputMon.sv"
-`include "InputAgent.sv"
-`include "CovCollector.sv"
-`include "OutputMon.sv"
-`include "OutputAgent.sv"
-`include "RefModel.sv"
-`include "Scoreboard.sv"
-`include "TestEnv.sv"
+`include "classes/InputTxn.sv"
+`include "classes/OutputTxn.sv"
+`include "classes/ClockCnt.sv"
+`include "classes/InputSeqr.sv"
+`include "classes/InputSeq.sv"
+`include "classes/InputDrv.sv"
+`include "classes/InputMon.sv"
+`include "classes/InputAgent.sv"
+`include "classes/CovCollector.sv"
+`include "classes/OutputMon.sv"
+`include "classes/OutputAgent.sv"
+`include "classes/RefModel.sv"
+`include "classes/Scoreboard.sv"
+`include "classes/TestEnv.sv"
 
 endpackage
 

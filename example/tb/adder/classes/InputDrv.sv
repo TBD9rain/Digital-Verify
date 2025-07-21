@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InputDrv
 //
 //  Description     :   DUT input driver
@@ -18,7 +18,7 @@ class InputDrv #(
     //  input transaction class
     typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
 
-    virtual interface test_if.drv_mp vif;
+    virtual interface adder_if.drv_mp vif;
 
     InputSeqr seqr;
 

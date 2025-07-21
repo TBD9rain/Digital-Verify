@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   ClockCnt
 //
 //  Description     :   simulation clock counter
@@ -13,7 +13,7 @@
 //==================================================================================================
 
 class ClockCnt;
-    virtual interface test_if.env_mp vif;
+    virtual interface adder_if.env_mp vif;
 
     longint unsigned clk_cnt;
 

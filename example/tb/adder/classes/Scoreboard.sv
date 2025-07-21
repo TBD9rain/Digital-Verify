@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Scoreboard
 //
 //  Description     :   verification scoreboard
@@ -20,7 +20,7 @@ class Scoreboard #(
     typedef InputTxn #(.DATA_WIDTH (DATA_IN_WIDTH)) INPUT_TXN;
     typedef OutputTxn #(.DATA_WIDTH (DATA_OUT_WIDTH)) OUTPUT_TXN;
 
-    virtual interface test_if.env vif;
+    virtual interface adder_if.env vif;
 
     mailbox #(INPUT_TXN) i2score_mbox;
     mailbox #(OUTPUT_TXN) o2score_mbox;

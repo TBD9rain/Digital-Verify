@@ -3,11 +3,6 @@
 # when sim_time == 0, run all
 set sim_time        1000
 
-# diamond pmi source library
-# set pmi_lib         D:/lscc/diamond/3.11_x64/cae_library/simulation/verilog/pmi
-# radiant pmi source library
-# set pmi_lib         D:/lscc/radiant/3.2/ip/pmi
-
 set tb_module       adder_tb
 set wave_do         wave.do
 

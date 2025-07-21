@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.1
+//  Version         :   v1.1.2
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
@@ -34,7 +34,7 @@ parameter   MAX_RAND_ITERATION  = 100;
 
 import msg_print_pkg::*;
 
-import test_pkg::*;
+import adder_pkg::*;
 
 
 //=====================
@@ -55,7 +55,7 @@ int i;
 //  INTERFACE INSTANTIATION
 //=========================
 
-test_if #(
+adder_if #(
     .DATA_WIDTH (DATA_WIDTH))
 tb_if();
 

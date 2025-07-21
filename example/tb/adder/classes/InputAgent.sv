@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InputAgent
 //
 //  Description     :   DUT input agent
@@ -18,7 +18,7 @@ class InputAgent #(
     //  input transaction class
     typedef InputTxn #(.DATA_WIDTH (DATA_WIDTH)) INPUT_TXN;
 
-    virtual interface test_if vif;
+    virtual interface adder_if vif;
 
     InputSeqr #(.DATA_WIDTH (DATA_WIDTH)) seqr;
     InputDrv #(.DATA_WIDTH (DATA_WIDTH))  driver;
