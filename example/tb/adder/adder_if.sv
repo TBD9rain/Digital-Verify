@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.4
+//  Version         :   v1.0.5
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -77,8 +77,8 @@ interface adder_if #(
         input   addend0,
         input   addend1,
 
-        input   data_out_vld,
-        input   sum);
+        output  data_out_vld,
+        output  sum);
 endinterface
 
 
