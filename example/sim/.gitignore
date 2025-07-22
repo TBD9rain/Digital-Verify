@@ -7,7 +7,7 @@
 # Simulation Files
 #=================
 
-/work/
+work/
 modelsim.ini
 sim.log
 vsim.wlf
