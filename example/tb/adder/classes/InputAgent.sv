@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   InputAgent
 //
 //  Description     :   DUT input agent
@@ -29,18 +29,21 @@ class InputAgent #(
     mailbox #(INPUT_TXN) i2score_mbox;
 
     bit drive_en;
+    bit cover_en;
 
     event tc_done;
 
     function new(
-        input bit drive_en = 'b1);
+        input bit drive_en = 'b1,
+        input bit cover_en = 'b1);
 
         this.drive_en = drive_en;
+        this.cover_en = cover_en;
         if (this.drive_en) begin
             this.seqr = new();
             this.driver = new();
         end
-        this.monitor = new();
+        this.monitor = new(this.cover_en);
         print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
     endfunction
 

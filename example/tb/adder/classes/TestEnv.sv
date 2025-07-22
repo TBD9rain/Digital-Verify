@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   TestEnv
 //
 //  Description     :   test environment
@@ -61,7 +61,7 @@ class TestEnv #(
         if (this.drive_en) begin
             this.seq = new();
         end
-        this.input_agt = new(this.drive_en);
+        this.input_agt = new(this.drive_en, this.cover_en);
         if (this.cover_en) begin
             this.cov_coll = new();
         end

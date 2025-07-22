@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   InputMon
 //
 //  Description     :   DUT input monitor
@@ -26,7 +26,12 @@ class InputMon #(
 
     longint unsigned ptn_cnt;
 
-    function new();
+    bit cover_en;
+
+    function new(
+        input bit cover_en = 1'b1);
+
+        this.cover_en = cover_en;
         this.ptn_cnt = 0;
         print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
     endfunction
@@ -65,7 +70,9 @@ class InputMon #(
                 ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
-            i2cov_mbox.put(txn_caught);
+            if (cover_en) begin
+                i2cov_mbox.put(txn_caught);
+            end
             i2ref_mbox.put(txn_caught);
             i2score_mbox.put(txn_caught);
 
