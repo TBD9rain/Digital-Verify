@@ -55,6 +55,6 @@ The coverage recording is also completed in the checker.
 
 # Roadmap
 
-- implement module integration with sub-module monitor.
+- UVM based Verification
 
 
