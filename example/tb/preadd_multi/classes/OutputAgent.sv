@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   OutputAgent
 //
 //  Description     :   DUT output agent
@@ -26,13 +26,13 @@ class OutputAgent #(
 
     function new();
         this.monitor = new();
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     function void connect;
         monitor.vif = vif;
         monitor.o2score_mbox = o2score_mbox;
-        print_msg($typename(this), "connection completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "connection completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

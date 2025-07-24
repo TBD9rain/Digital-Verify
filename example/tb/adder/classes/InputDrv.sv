@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   InputDrv
 //
 //  Description     :   DUT input driver
@@ -23,7 +23,7 @@ class InputDrv #(
     InputSeqr seqr;
 
     function new();
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

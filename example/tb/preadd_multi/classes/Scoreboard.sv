@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   Scoreboard
 //
 //  Description     :   scoreboard
@@ -30,7 +30,7 @@ class Scoreboard #(
 
     function new();
         this.ptn_cnt    = 0;
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;
@@ -77,7 +77,7 @@ class Scoreboard #(
                     "ref ", txn_ref.print
                     }, ptn_cnt);
 
-                print_msg($typename(this), msg, INFO, MEDIUM, LOG);
+                print_msg($typename(this), msg, INFO, DEBUG, LOG);
             end
             else begin
                 msg = $sformatf({
@@ -88,7 +88,7 @@ class Scoreboard #(
                     "ref ", txn_ref.print
                     }, ptn_cnt);
 
-                print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
+                print_msg($typename(this), msg, ERROR, HIGH, STOP);
             end
 
             //  timing check
@@ -100,7 +100,7 @@ class Scoreboard #(
                     "output time: %d\n"
                     }, ptn_cnt, txn_in.timestamp, txn_out.timestamp);
 
-                print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
+                print_msg($typename(this), msg, ERROR, HIGH, STOP);
             end
 
             ptn_cnt++;

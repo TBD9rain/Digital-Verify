@@ -26,7 +26,7 @@ class OutputMon #(
 
     function new();
         this.ptn_cnt = 0;
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;
@@ -59,7 +59,7 @@ class OutputMon #(
                 "\tNO. %0d\n",
                 txn_caught.print
                 }, ptn_cnt);
-            print_msg($typename(this), msg, INFO, LOW, LOG);
+            print_msg($typename(this), msg, INFO, DEBUG, LOG);
 
             o2score_mbox.put(txn_caught);
 

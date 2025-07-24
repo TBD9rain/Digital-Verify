@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   CovCollector
 //
 //  Description     :   coverage collector
@@ -38,7 +38,7 @@ class CovCollector #(
     function new();
         //  instantiate coverage group
         this.adder_8bit_tc = new();
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

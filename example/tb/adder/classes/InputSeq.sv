@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InputSeq
 //
 //  Description     :   testcase input sequence
@@ -21,7 +21,7 @@ class InputSeq #(
     InputSeqr seqr;
 
     function new();
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task gen_rand_tc(
@@ -33,11 +33,11 @@ class InputSeq #(
             txn_data = new();
             assert(txn_data.randomize())
             else begin
-                print_msg($typename(this), "randomization failed.", ERROR, HIGHEST, STOP);
+                print_msg($typename(this), "randomization failed.", FATAL, HIGHEST, STOP);
             end
             seqr.put(txn_data);
         end
-        print_msg($typename(this), $sformatf("added %0d random testcases.", tc_num), INFO, MEDIUM, LOG);
+        print_msg($typename(this), $sformatf("added %0d random testcases.", tc_num), INFO, HIGH, LOG);
     endtask
 
     task add_case(

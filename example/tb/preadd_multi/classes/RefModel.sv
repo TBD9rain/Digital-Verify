@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   RefModel
 //
 //  Description     :   reference model
@@ -24,7 +24,7 @@ class RefModel #(
     mailbox #(OUTPUT_TXN) ref2score_mbox;
 
     function new();
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

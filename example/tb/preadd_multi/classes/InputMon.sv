@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   InputMon
 //
 //  Description     :   DUT input monitor
@@ -33,7 +33,7 @@ class InputMon #(
 
         this.cover_en = cover_en;
         this.ptn_cnt = 0;
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;
@@ -72,7 +72,7 @@ class InputMon #(
                 "NO. %0d\n",
                 txn_caught.print
                 }, ptn_cnt);
-            print_msg($typename(this), msg, INFO, LOW, LOG);
+            print_msg($typename(this), msg, INFO, DEBUG, LOG);
 
             if (cover_en) begin
                 i2cov_mbox.put(txn_caught);

@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   ClockCnt
 //
 //  Description     :   simulation clock counter
@@ -19,7 +19,7 @@ class ClockCnt;
 
     function new();
         this.clk_cnt = 0;
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

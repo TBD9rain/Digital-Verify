@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InputAgent
 //
 //  Description     :   DUT input agent
@@ -44,7 +44,7 @@ class InputAgent #(
             this.driver = new();
         end
         this.monitor = new(this.cover_en);
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     function void connect;
@@ -57,7 +57,7 @@ class InputAgent #(
         monitor.i2cov_mbox = i2cov_mbox;
         monitor.i2ref_mbox = i2ref_mbox;
         monitor.i2score_mbox = i2score_mbox;
-        print_msg($typename(this), "connection completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "connection completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task run;

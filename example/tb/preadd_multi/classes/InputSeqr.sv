@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InputSeqr
 //
 //  Description     :   DUT testcase sequencer
@@ -27,7 +27,7 @@ class InputSeqr #(
     function new();
         this.seqr_mbox = new();
         this.txn_num = 0;
-        print_msg($typename(this), "initialization completed.", INFO, HIGH, LOG);
+        print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
     task put(
