@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.1.1
 //  Title           :   Scoreboard
 //
 //  Description     :   verification scoreboard
@@ -47,8 +47,8 @@ class Scoreboard #(
                 while (i2score_mbox.try_get(txn_in)) begin
                     msg = $sformatf({
                         "Testcase ABORTED due to reset:\n",
-                        "\tNO.%0d\n",
-                        data_print_str(txn_in, null, null)
+                        "NO.%0d\n",
+                        txn_in.print
                         }, ptn_cnt);
                     ptn_cnt++;
 
@@ -68,20 +68,24 @@ class Scoreboard #(
             ref2score_mbox.get(txn_ref);
 
             //  output check
-            assert (output_check(txn_out, txn_ref)) begin
+            assert (txn_out.compare(txn_ref)) begin
                 msg = $sformatf({
                     "Testcase passed:\n",
-                    "\tNO.%0d\n",
-                    data_print_str(txn_in, txn_out, txn_ref)
+                    "NO.%0d\n",
+                    txn_in.print, "\n",
+                    "out ", txn_out.print,
+                    "ref ", txn_ref.print
                     }, ptn_cnt);
 
                 print_msg($typename(this), msg, INFO, MEDIUM, LOG);
             end
             else begin
                 msg = $sformatf({
-                    "Testcase failed:\n",
-                    "\tNO.%0d\n",
-                    data_print_str(txn_in, txn_out, txn_ref)
+                    "Testcase passed:\n",
+                    "NO.%0d\n",
+                    txn_in.print, "\n",
+                    "out ", txn_out.print,
+                    "ref ", txn_ref.print
                     }, ptn_cnt);
 
                 print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
@@ -92,8 +96,8 @@ class Scoreboard #(
             else begin
                 msg = $sformatf({
                     "Testcase NO. %0d timing error:\n",
-                    "\tinput time : %d\n",
-                    "\toutput time: %d\n"
+                    "input time: %d\n",
+                    "output time: %d\n"
                     }, ptn_cnt, txn_in.timestamp, txn_out.timestamp);
 
                 print_msg($typename(this), msg, ERROR, HIGHEST, STOP);
@@ -103,43 +107,11 @@ class Scoreboard #(
         end
     endtask
 
-    function bit output_check(
-        input OUTPUT_TXN txn_out,
-        input OUTPUT_TXN txn_ref);
-
-        output_check = (txn_out.sum === txn_ref.sum);
-    endfunction
-
     function bit timing_check(
         input INPUT_TXN txn_in,
         input OUTPUT_TXN txn_out);
 
         timing_check = (txn_out.timestamp - txn_in.timestamp) == 1;
-    endfunction
-
-    function string data_print_str(
-        input INPUT_TXN txn_in,
-        input OUTPUT_TXN txn_out,
-        input OUTPUT_TXN txn_ref);
-
-        string str_data_in = "";
-        string str_data_out = "";
-        string str_data_ref = "";
-
-        if (txn_in) begin
-            str_data_in = $sformatf({
-                "\tInput addend0: %03d\n",
-                "\tInput addend1: %03d\n"
-                }, txn_in.addend0, txn_in.addend1);
-        end
-        if (txn_out) begin
-            str_data_out = $sformatf({"\tOutput sum   : %03d\n"}, txn_out.sum);
-        end
-        if (txn_ref) begin
-            str_data_ref = $sformatf({"\tReference sum: %03d\n"}, txn_ref.sum);
-        end
-
-        data_print_str  = $sformatf({str_data_in, "\n", str_data_out, str_data_ref});
     endfunction
 endclass
 

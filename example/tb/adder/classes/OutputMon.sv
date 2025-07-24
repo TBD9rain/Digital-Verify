@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.1.0
 //  Title           :   OutputMon
 //
 //  Description     :   DUT output monitor
@@ -55,9 +55,9 @@ class OutputMon #(
             txn_caught = new(sum, timestamp);
 
             msg = $sformatf({
-                "DUT input pattern caught:\n",
-                "\tNO. %0d\n",
-                data_print_str(txn_caught)},
+                "DUT output pattern caught:\n",
+                "NO. %0d\n",
+                txn_caught.print},
                 ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
@@ -66,13 +66,5 @@ class OutputMon #(
             ptn_cnt++;
         end
     endtask
-
-    function string data_print_str(
-        input OUTPUT_TXN txn_print);
-
-        data_print_str  = $sformatf({
-            "\tsum: %03d\n"
-            }, txn_print.sum);
-    endfunction
 endclass
 

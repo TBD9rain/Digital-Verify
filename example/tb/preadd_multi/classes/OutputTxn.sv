@@ -28,5 +28,17 @@ class OutputTxn #(
         this.data_out = data_out;
         this.timestamp = timestamp;
     endfunction
+
+    function string print;
+        print = $sformatf({
+            "data_out: %0d"
+            }, data_out);
+    endfunction
+
+    function bit compare(
+        input OutputTxn txn);
+
+        compare = (txn.data_out === data_out);
+    endfunction
 endclass
 

@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.2
+//  Version         :   v1.1.0
 //  Title           :   InputMon
 //
 //  Description     :   DUT input monitor
@@ -65,8 +65,8 @@ class InputMon #(
 
             msg = $sformatf({
                 "DUT input pattern caught:\n",
-                "\tNO. %0d\n",
-                data_print_str(txn_caught)},
+                "NO. %0d\n",
+                txn_caught.print},
                 ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
@@ -79,14 +79,5 @@ class InputMon #(
             ptn_cnt++;
         end
     endtask
-
-    function string data_print_str(
-        input INPUT_TXN txn_print);
-
-        data_print_str  = $sformatf({
-            "\taddend0: %03d\n",
-            "\taddend1: %03d\n"
-            }, txn_print.addend0, txn_print.addend1);
-    endfunction
 endclass
 

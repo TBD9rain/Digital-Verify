@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   OutputMon
 //
 //  Description     :   DUT output monitor
@@ -57,8 +57,8 @@ class OutputMon #(
             msg = $sformatf({
                 "DUT input pattern caught:\n",
                 "\tNO. %0d\n",
-                data_print_str(txn_caught)},
-                ptn_cnt);
+                txn_caught.print
+                }, ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
             o2score_mbox.put(txn_caught);
@@ -66,13 +66,5 @@ class OutputMon #(
             ptn_cnt++;
         end
     endtask
-
-    function string data_print_str(
-        input OUTPUT_TXN txn_print);
-
-        data_print_str  = $sformatf({
-            "\tdata_out: %d\n"
-            }, txn_print.data_out);
-    endfunction
 endclass
 

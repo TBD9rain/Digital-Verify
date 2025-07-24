@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   OutputTxn
 //
 //  Description     :   output data transaction
@@ -27,6 +27,16 @@ class OutputTxn #(
 
         this.sum = sum;
         this.timestamp = timestamp;
+    endfunction
+
+    function string print;
+        print = $sformatf("sum: %0d\n", sum);
+    endfunction
+
+    function bit compare(
+        input OutputTxn txn);
+
+        compare = (txn.sum === sum);
     endfunction
 endclass
 

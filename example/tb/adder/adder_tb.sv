@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.2
+//  Version         :   v1.1.3
 //  Title           :   adder_8bit_tb
 //
 //  Description     :   top testbench
@@ -160,9 +160,9 @@ initial begin
         coverage_rate = tb_env.get_coverage(num_bins_covered, num_bins_total);
         print_msg("Testbench", $sformatf({
             "Iteration NO.%0d, DUT input coverage:\n",
-            "\tcoverage rate: %0.4f\%\n",
-            "\tbins covered : %0d\n",
-            "\tbins total   : %0d\n"
+            "coverage rate: %0.4f\%\n",
+            "bins covered : %0d\n",
+            "bins total   : %0d\n"
             }, i, coverage_rate, num_bins_covered, num_bins_total), INFO, HIGH, LOG);
         if (coverage_rate == 100) begin
             print_msg("Testbench", "coverage rate: 100.0%.\n", INFO, HIGHEST, LOG);

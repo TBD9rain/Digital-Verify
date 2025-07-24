@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   InputMon
 //
 //  Description     :   DUT input monitor
@@ -69,9 +69,9 @@ class InputMon #(
 
             msg = $sformatf({
                 "DUT input pattern caught:\n",
-                "\tNO. %0d\n",
-                data_print_str(txn_caught)},
-                ptn_cnt);
+                "NO. %0d\n",
+                txn_caught.print
+                }, ptn_cnt);
             print_msg($typename(this), msg, INFO, LOW, LOG);
 
             if (cover_en) begin
@@ -83,16 +83,5 @@ class InputMon #(
             ptn_cnt++;
         end
     endtask
-
-    function string data_print_str(
-        input INPUT_TXN txn_print);
-
-        data_print_str  = $sformatf({
-            "\tdata_in_a0: %d\n",
-            "\tdata_in_a1: %d\n",
-            "\tdata_in_b0: %d\n",
-            "\tdata_in_b1: %d\n"
-            }, txn_print.data_in_a0, txn_print.data_in_a1, txn_print.data_in_b0, txn_print.data_in_b1);
-    endfunction
 endclass
 

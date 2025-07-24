@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   InputTxn
 //
 //  Description     :   DUT input transaction
@@ -36,6 +36,15 @@ class InputTxn #(
         this.data_in_b0 = data_in_b0;
         this.data_in_b1 = data_in_b1;
         this.timestamp = timestamp;
+    endfunction
+
+    function string print;
+        print = $sformatf({
+            "data_in_a0: %0d\n",
+            "data_in_a1: %0d\n",
+            "data_in_b0: %0d\n",
+            "data_in_b1: %0d\n"
+            }, data_in_a0, data_in_a1, data_in_b0, data_in_b1);
     endfunction
 endclass
 

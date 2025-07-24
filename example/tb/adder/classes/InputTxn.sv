@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   InputTxn
 //
 //  Description     :   input data transaction
@@ -30,6 +30,13 @@ class InputTxn #(
         this.addend0 = addend0;
         this.addend1 = addend1;
         this.timestamp = timestamp;
+    endfunction
+
+    function string print;
+        print = $sformatf({
+            "addend0: %0d\n",
+            "addend1: %0d\n"
+            }, addend0, addend1);
     endfunction
 endclass
 
