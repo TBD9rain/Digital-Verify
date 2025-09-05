@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.2
+//  Version         :   v1.0.3
 //  Title           :   InputDrv
 //
 //  Description     :   DUT input driver
@@ -26,38 +26,49 @@ class InputDrv #(
         print_msg($typename(this), "initialization completed.", INFO, MEDIUM, LOG);
     endfunction
 
-    task run;
-        INPUT_TXN tc_txn;
+    `ifndef NO_SUB_ACTIVE
+        task run;
+            INPUT_TXN tc_txn;
 
-        forever begin
-            @vif.drv_cb;
-            if (~vif.rst_n) begin
-                no_drive;
-            end
-            else begin
-                seqr.get(tc_txn);
-                assert (tc_txn) begin
-                    drive(tc_txn);
-                end
-                else begin
+            forever begin
+                @vif.drv_cb;
+                if (~vif.rst_n) begin
                     no_drive;
                 end
+                else begin
+                    seqr.get(tc_txn);
+                    assert (tc_txn) begin
+                        drive(tc_txn);
+                    end
+                    else begin
+                        no_drive;
+                    end
+                end
             end
-        end
-    endtask
+        endtask
 
-    task drive(
-        input INPUT_TXN tc_txn);
+        task drive(
+            input INPUT_TXN tc_txn);
 
-        vif.drv_cb.data_in_vld <= 'b1;
-        vif.drv_cb.addend0 <= tc_txn.addend0;
-        vif.drv_cb.addend1 <= tc_txn.addend1;
-    endtask
+            vif.drv_cb.data_in_vld <= 'b1;
+            vif.drv_cb.addend0 <= tc_txn.addend0;
+            vif.drv_cb.addend1 <= tc_txn.addend1;
+        endtask
 
-    task no_drive;
-        vif.drv_cb.data_in_vld <= 'b0;
-        vif.drv_cb.addend0 <= 'b0;
-        vif.drv_cb.addend1 <= 'b0;
-    endtask
+        task no_drive;
+            vif.drv_cb.data_in_vld <= 'b0;
+            vif.drv_cb.addend0 <= 'b0;
+            vif.drv_cb.addend1 <= 'b0;
+        endtask
+    `else
+        task run;
+        endtask
+
+        task drive;
+        endtask
+
+        task no_drive;
+        endtask
+    `endif
 endclass
 

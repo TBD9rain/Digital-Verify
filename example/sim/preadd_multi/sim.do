@@ -27,7 +27,8 @@ vmap work ./work
 # add "+incdir+<directory>" to specify directories to search "`include" files
 # add "+define+<marco_name>[=<macro_text>] to define or override a macro
 
-vlog -sv +cover=bcefst -work work -f file_list.txt
+vlog -sv +cover=bcefst -work work +define+NO_SUB_ACTIVE=1 -f file_list_sub.txt
+vlog -sv +cover=bcefst -work work -f file_list_top.txt
 
 # 5. Optimize designs
 # FOR QUESTASIM ONLY
@@ -50,7 +51,7 @@ if {$sim_time <= 0} {
 # add "+typdelays" or "+maxdelays" or "+mindelays" for timing simulation
 
 # add "-g<param_name>=<param_value>" to assign a value to a parameter without explicit value
-# add "-G<param_name>=<param_value>" to assign or override a parameter 
+# add "-G<param_name>=<param_value>" to assign or override a parameter
 
 vsim -lib work \
     -coverage \
