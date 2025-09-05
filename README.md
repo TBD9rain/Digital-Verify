@@ -53,6 +53,11 @@ The checker compare the actual output and reference output.
 The coverage recording is also completed in the checker.
 
 
+## Sub-module Monitor
+
+Implemented via hierarchy signal access and compiler macros.
+
+
 # Roadmap
 
 - UVM based Verification
