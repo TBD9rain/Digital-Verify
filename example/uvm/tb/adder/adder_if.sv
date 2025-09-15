@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.6
+//  Version         :   v1.0.1
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -13,10 +13,10 @@
 //==================================================================================================
 
 interface adder_if #(
-    parameter   DATA_WIDTH  = 8);
-
-    logic   clk;
-    logic   rst_n;
+    parameter   DATA_WIDTH  = 8)
+(
+    input   logic   clk,
+    input   logic   rst_n);
 
     //  environment variable
     longint unsigned    clk_cnt;

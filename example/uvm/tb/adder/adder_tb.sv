@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   adder_tb
 //
 //  Description     :   testbench definition
@@ -42,7 +42,9 @@ bit rst_n;
 
 adder_if #(
     .DATA_WIDTH (8))
-tb_if();
+tb_if(
+    .clk    (clk),
+    .rst_n  (rst_n));
 
 
 //===================
@@ -66,9 +68,6 @@ u_dut(
 //=====================
 //  VERIFICATION CODING
 //=====================
-
-assign  tb_if.clk   = clk;
-assign  tb_if.rst_n = rst_n;
 
 //  clock generator
 initial begin
