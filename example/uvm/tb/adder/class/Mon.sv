@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -38,9 +38,6 @@ class InMon #(
         TXN txn;
 
         forever begin
-            while(!vif.rst_n) begin
-                @vif.drv_cb;
-            end
             sample_txn(txn);
             ap.write(txn);
         end
@@ -50,7 +47,7 @@ class InMon #(
         output TXN txn;
 
         @vif.mon_cb;
-        while (~vif.mon_cb.data_in_vld) begin
+        while (vif.mon_cb.data_in_vld !== 1) begin
             @vif.mon_cb;
         end
         txn = TXN::type_id::create("txn");
@@ -95,7 +92,7 @@ class OutMon #(
         output TXN txn;
 
         @vif.mon_cb
-        while (~vif.mon_cb.data_out_vld) begin
+        while (vif.mon_cb.data_out_vld !== 1) begin
             @vif.mon_cb;
         end
         txn = TXN::type_id::create("txn");
