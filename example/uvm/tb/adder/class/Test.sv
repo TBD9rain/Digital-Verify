@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Test
 //
 //  Description     :   test class definition
@@ -18,8 +18,11 @@ class BaseTest extends uvm_test;
     localparam  DATA_IN_WIDTH = 8;
     localparam  DATA_OUT_WIDTH = 9;
 
+    localparam type ITXN = InTxn #(DATA_IN_WIDTH);
+    localparam type OTXN = OutTxn #(DATA_OUT_WIDTH);
+
     //  variable definition
-    Env #(InTxn #(DATA_IN_WIDTH), OutTxn #(DATA_OUT_WIDTH)) env;
+    Env #(ITXN, OTXN) env;
 
     function new(string name="BaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -31,8 +34,8 @@ class BaseTest extends uvm_test;
         uvm_config_db#(uvm_object_wrapper)::set(this,
             "env.i_agt.sqr.main_phase",
             "default_sequence",
-            BaseSeq #(InTxn #(DATA_IN_WIDTH))::type_id::get());
-        env = Env #()::type_id::create("env", this);
+            BaseSeq #(ITXN)::type_id::get());
+        env = Env #(ITXN, OTXN)::type_id::create("env", this);
     endfunction
 
     virtual function void report_phase(uvm_phase phase);
