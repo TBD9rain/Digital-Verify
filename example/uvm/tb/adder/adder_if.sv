@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -18,9 +18,6 @@ interface adder_if #(
     input   logic   clk,
     input   logic   rst_n);
 
-    //  environment variable
-    longint unsigned    clk_cnt;
-
     //  DUT IO port
     logic                       data_in_vld;
     logic   [DATA_WIDTH - 1: 0] addend0;
@@ -29,14 +26,17 @@ interface adder_if #(
     logic                   data_out_vld;
     logic   [DATA_WIDTH: 0] sum;
 
-    //  environment
-    clocking env_cb @(posedge clk);
-        output  clk_cnt;
-    endclocking
+    //  clock counter for time stamp
+    longint unsigned clk_cnt;
 
-    modport env_mp (
-        input       rst_n,
-        clocking    env_cb);
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (~rst_n) begin
+            clk_cnt <= 0;
+        end
+        else begin
+            clk_cnt <= clk_cnt + 1;
+        end
+    end
 
     //  driver
     clocking drv_cb @(posedge clk);
@@ -54,14 +54,14 @@ interface adder_if #(
 
     //  monitor
     clocking mon_cb @(posedge clk);
-        input   clk_cnt;
-
         input   data_in_vld;
         input   addend0;
         input   addend1;
 
         input   data_out_vld;
         input   sum;
+
+        input   clk_cnt;
     endclocking
 
     modport mon_mp (

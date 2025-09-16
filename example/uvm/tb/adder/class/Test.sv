@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.1.0
 //  Title           :   Test
 //
 //  Description     :   test class definition
@@ -17,12 +17,13 @@ class BaseTest extends uvm_test;
 
     localparam  DATA_IN_WIDTH = 8;
     localparam  DATA_OUT_WIDTH = 9;
+    localparam  longint unsigned LATENCY = 1;
 
     localparam type ITXN = InTxn #(DATA_IN_WIDTH);
     localparam type OTXN = OutTxn #(DATA_OUT_WIDTH);
 
     //  variable definition
-    Env #(ITXN, OTXN) env;
+    Env #(ITXN, OTXN, LATENCY) env;
 
     function new(string name="BaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -35,7 +36,7 @@ class BaseTest extends uvm_test;
             "env.i_agt.sqr.main_phase",
             "default_sequence",
             BaseSeq #(ITXN)::type_id::get());
-        env = Env #(ITXN, OTXN)::type_id::create("env", this);
+        env = Env #(ITXN, OTXN, LATENCY)::type_id::create("env", this);
     endfunction
 
     virtual function void report_phase(uvm_phase phase);

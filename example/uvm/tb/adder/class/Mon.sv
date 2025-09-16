@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -53,6 +53,7 @@ class InMon #(
         txn = TXN::type_id::create("txn");
         txn.addend0 = vif.mon_cb.addend0;
         txn.addend1 = vif.mon_cb.addend1;
+        txn.timestamp = vif.mon_cb.clk_cnt;
     endtask
 endclass
 
@@ -97,6 +98,7 @@ class OutMon #(
         end
         txn = TXN::type_id::create("txn");
         txn.sum = vif.mon_cb.sum;
+        txn.timestamp = vif.mon_cb.clk_cnt;
     endtask
 endclass
 

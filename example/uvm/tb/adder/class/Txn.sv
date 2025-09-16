@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.1.0
 //  Title           :   Txn
 //
 //  Description     :   transaction class definition
@@ -20,6 +20,9 @@ class InTxn #(
     rand bit [DATA_WIDTH - 1: 0] addend0;
     rand bit [DATA_WIDTH - 1: 0] addend1;
 
+    //  time stamp
+    longint unsigned timestamp = 0;
+
     function new(string name="InTxn");
         super.new(name);
     endfunction
@@ -27,6 +30,7 @@ class InTxn #(
     `uvm_object_param_utils_begin(InTxn #(DATA_WIDTH))
         `uvm_field_int(addend0, UVM_ALL_ON)
         `uvm_field_int(addend1, UVM_ALL_ON)
+        `uvm_field_int(timestamp, UVM_ALL_ON | UVM_NOCOMPARE)
     `uvm_object_utils_end
 endclass
 
@@ -38,12 +42,16 @@ class OutTxn #(
     //  variable Definition
     logic [DATA_WIDTH - 1: 0] sum;
 
+    //  time stamp
+    longint unsigned timestamp = 0;
+
     function new(string name="OutTxn");
         super.new(name);
     endfunction
 
     `uvm_object_param_utils_begin(OutTxn #(DATA_WIDTH))
         `uvm_field_int(sum, UVM_ALL_ON)
+        `uvm_field_int(timestamp, UVM_ALL_ON | UVM_NOCOMPARE)
     `uvm_object_utils_end
 endclass
 
