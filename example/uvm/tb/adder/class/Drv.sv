@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Drv
 //
 //  Description     :   driver class definition
@@ -32,14 +32,14 @@ class Drv #(
     endfunction
 
     task reset_phase(uvm_phase phase);
-        vif.drv_cb.data_in_vld <= 0;
-        vif.drv_cb.addend0 <= 0;
-        vif.drv_cb.addend1 <= 0;
+        vif.cb.data_in_vld <= 0;
+        vif.cb.addend0 <= 0;
+        vif.cb.addend1 <= 0;
     endtask
 
     task main_phase(uvm_phase phase);
         while(!vif.rst_n) begin
-            @vif.drv_cb;
+            @vif.cb;
         end
         forever begin
             seq_item_port.get_next_item(req);
@@ -51,13 +51,13 @@ class Drv #(
     task drive_req;
         input REQ txn;
 
-        vif.drv_cb.data_in_vld <= 1;
-        vif.drv_cb.addend0 <= txn.addend0;
-        vif.drv_cb.addend1 <= txn.addend1;
-        @vif.drv_cb
-        vif.drv_cb.data_in_vld <= 0;
-        vif.drv_cb.addend0 <= 0;
-        vif.drv_cb.addend1 <= 0;
+        vif.cb.data_in_vld <= 1;
+        vif.cb.addend0 <= txn.addend0;
+        vif.cb.addend1 <= txn.addend1;
+        @vif.cb
+        vif.cb.data_in_vld <= 0;
+        vif.cb.addend0 <= 0;
+        vif.cb.addend1 <= 0;
     endtask
 endclass
 

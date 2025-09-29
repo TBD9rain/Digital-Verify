@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.2
+//  Version         :   v1.0.3
 //  Title           :   test_if
 //
 //  Description     :   interface definition
@@ -38,25 +38,11 @@ interface adder_if #(
         end
     end
 
-    //  driver
-    clocking drv_cb @(posedge clk);
-        output  data_in_vld;
-        output  addend0;
-        output  addend1;
-
-        input   data_out_vld;
-        input   sum;
-    endclocking
-
-    modport drv_mp (
-        input       rst_n,
-        clocking    drv_cb);
-
-    //  monitor
-    clocking mon_cb @(posedge clk);
-        input   data_in_vld;
-        input   addend0;
-        input   addend1;
+    //  clocking block
+    clocking cb @(posedge clk);
+        inout   data_in_vld;
+        inout   addend0;
+        inout   addend1;
 
         input   data_out_vld;
         input   sum;
@@ -64,9 +50,21 @@ interface adder_if #(
         input   clk_cnt;
     endclocking
 
-    modport mon_mp (
+    //  driver
+    modport drv_mp (
+        clocking    cb,
         input       rst_n,
-        clocking    mon_cb);
+        output      data_in_vld,
+        output      addend0,
+        output      addend1);
+
+    //  monitor
+    modport mon_mp (
+        clocking    cb,
+        input       rst_n,
+        input       data_in_vld,
+        input       addend0,
+        input       addend1);
 
     //  DUT
     modport dut_mp (
