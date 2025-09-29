@@ -1,0 +1,17 @@
+#======================================
+# snippets from Ultisnips are available
+#======================================
+
+
+#=================
+# Simulation Files
+#=================
+
+work/
+modelsim.ini
+sim.log
+vsim.wlf
+message_printed.log
+certe_dump.xml
+
+
