@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.0.0
+//  Version : 1.1.0
 //
 //  Description
 //
@@ -17,11 +17,13 @@ class VideoTest extends uvm_test;
 
     localparam DATA_WIDTH = 8;
 
-    localparam type TXN = FrameDataTxn #(DATA_WIDTH);
+    localparam type DATA_TXN = FrameDataTxn #(DATA_WIDTH);
+    localparam type FORMAT_TXN = VideoFormatTxn;
     localparam longint unsigned LATENCY = 1;
 
     //  variable definition
-    FrameDataEnv #(TXN, LATENCY) env;
+    FrameDataEnv #(DATA_TXN, LATENCY) data_env;
+    VideoFormatEnv #(FORMAT_TXN) format_env;
 
     video_timing_t  video_timing;
 
@@ -32,16 +34,19 @@ class VideoTest extends uvm_test;
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
+        data_env = FrameDataEnv #(DATA_TXN, LATENCY)::type_id::create("data_env", this);
+        format_env = VideoFormatEnv #(FORMAT_TXN)::type_id::create("format_env", this);
+
         uvm_config_db#(uvm_object_wrapper)::set(this,
-            "env.i_agt.sqr.main_phase",
+            "data_env.i_agt.sqr.main_phase",
             "default_sequence",
-            FrameDataSeq #(TXN)::type_id::get());
-        env = FrameDataEnv #(TXN, LATENCY)::type_id::create("env", this);
+            FrameDataSeq #(DATA_TXN)::type_id::get());
 
         video_timing = '{1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1};
-        uvm_config_db #(video_timing_t)::set(this, "env.*", "video_timing", video_timing);
+        uvm_config_db #(video_timing_t)::set(this, "data_env.*", "video_timing", video_timing);
+        uvm_config_db #(video_timing_t)::set(this, "format_env.*", "video_timing", video_timing);
 
-        set_report_verbosity_level_hier(UVM_MEDIUM);
+        set_report_verbosity_level_hier(UVM_LOW);
     endfunction
 
     virtual function void report_phase(uvm_phase phase);

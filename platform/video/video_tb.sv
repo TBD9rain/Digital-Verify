@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_tb
-//  Version : 1.0.0
+//  Version : 1.1.0
 //
 //  Description
 //
@@ -97,15 +97,15 @@ initial begin
     uvm_config_db #(int)::set(null, "", "recording_detail", 0);
     uvm_config_db #(uvm_bitstream_t)::set(null, "", "recording_detail", 0);
 
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.env.i_agt.drv", "vif", video_if);
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.env.i_agt.mon", "vif", video_if);
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.env.o_agt.mon", "vif", video_if);
+    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.i_agt.drv", "vif", video_if);
+    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.i_agt.mon", "vif", video_if);
+    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.o_agt.mon", "vif", video_if);
+    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.format_env.o_agt.mon", "vif", video_if);
 end
 
 initial begin
     run_test("VideoTest");
 end
-
 
 endmodule
 

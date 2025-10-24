@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataSeq
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -19,6 +19,8 @@ class FrameDataSeq #(
 
     //  handler to sequencer
     `uvm_declare_p_sequencer(FrameDataSqr)
+
+    bit frame_data_seq_done;
 
     function new(string name="FrameDataSeq");
         super.new(name);
@@ -40,6 +42,8 @@ class FrameDataSeq #(
             tc_txn.gen_color_bar();
             `uvm_send(tc_txn)
         end
+        frame_data_seq_done = 1;
+        uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", frame_data_seq_done);
         //  delay before drop objection
         starting_phase.phase_done.set_drain_time(this, 1000ns);
         if (starting_phase != null) begin
