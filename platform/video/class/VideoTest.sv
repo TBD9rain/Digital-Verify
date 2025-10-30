@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.0
+//  Version : 1.1.1
 //
 //  Description
 //
@@ -58,10 +58,18 @@ class VideoTest extends uvm_test;
         err_num = rpt_ser.get_severity_count(UVM_ERROR);
 
         if (err_num) begin
-            $write("\nTest failed.\n");
+            $write("\n");
+            $write("============\n");
+            $write("Test FAILED.\n");
+            $write("============\n");
+            $write("\n");
         end
         else begin
-            $write("\nTest passed.\n");
+            $write("\n");
+            $write("============\n");
+            $write("Test PASSED.\n");
+            $write("============\n");
+            $write("\n");
         end
     endfunction
 
