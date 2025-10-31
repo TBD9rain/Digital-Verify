@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataTxn
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //      video frame data transaction with video timing variables
@@ -104,18 +104,23 @@ class FrameDataTxn #(
     function void read_bin_frame(string file);
         int fd      = 0;
         int fcode   = 0;
+        byte temp;
+
+        if (~mem_allocated) begin
+            `uvm_fatal(get_name(), "frame data array is not allocated.")
+        end
 
         fd = $fopen(file, "rb");
         if (fd == 0) begin
             `uvm_fatal(get_name(), "can't open binary file to read frame data.")
         end
 
-        if (~mem_allocated) begin
-            `uvm_fatal(get_name(), "frame data array is not allocated.")
-        end
-
         //  for memory order:
         //      read from the little address to big address
+        //  for data array order:
+        //      "C" like order (row-major)
+        //  for channel order:
+        //      1st R, 2nd G, 3rd B
         //  for each data:
         //      read byte by byte in big endian manner
         //      8-bit wide memory is loaded using 1 byte per memory word
@@ -123,22 +128,21 @@ class FrameDataTxn #(
         fcode = $fread(frame_data, fd);
 
         if (fcode == 0) begin
-            string  error_info;
-            void'($ferror(fd, error_info));
             $fclose(fd);
-            `uvm_fatal(get_name(), error_info)
+            `uvm_fatal(get_name(), "no data is read.")
         end
-        else if (fcode < 3*((DATA_WIDTH + 7)/8)*frame_height*frame_width) begin
+        if (fcode < 3*((DATA_WIDTH + 7)/8)*frame_height*frame_width) begin
             $fclose(fd);
             `uvm_fatal(get_name(), "data read is less than predefined frame size.")
         end
-        else if ($feof() == 0) begin
+
+        fcode = $fread(temp, fd);
+        if (fcode != 0) begin
             $fclose(fd);
             `uvm_fatal(get_name(), "file size is greater than predefined frame size.")
         end
-        else begin
-            $fclose(fd);
-        end
+
+        $fclose(fd);
     endfunction
 endclass
 
