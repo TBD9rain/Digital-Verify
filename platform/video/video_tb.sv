@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_tb
-//  Version : 1.1.0
+//  Version : 1.1.1
 //
 //  Description
 //
@@ -104,7 +104,7 @@ initial begin
 end
 
 initial begin
-    run_test("VideoTest");
+    run_test("VideoBaseTest");
 end
 
 endmodule

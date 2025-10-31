@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataSeq
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -12,17 +12,17 @@
 //
 //==================================================================================================
 
-class FrameDataSeq #(
+class FrameDataBaseSeq #(
     parameter type REQTXN = FrameDataTxn
 ) extends uvm_sequence #(.REQ (REQTXN));
-    `uvm_object_param_utils(FrameDataSeq #(REQTXN))
+    `uvm_object_param_utils(FrameDataBaseSeq #(REQTXN))
 
     //  handler to sequencer
     `uvm_declare_p_sequencer(FrameDataSqr)
 
     bit frame_data_seq_done;
 
-    function new(string name="FrameDataSeq");
+    function new(string name="FrameDataBaseSeq");
         super.new(name);
     endfunction
 
@@ -40,6 +40,16 @@ class FrameDataSeq #(
             tc_txn.suffix_vsync = 1;
             tc_txn.alloc_mem();
             tc_txn.gen_color_bar();
+            `uvm_send(tc_txn)
+
+            `uvm_create(tc_txn)
+            //  transaction prepare
+            tc_txn.frame_width = p_sequencer.video_timing.h_active;
+            tc_txn.frame_height = p_sequencer.video_timing.v_active;
+            tc_txn.prefix_vsync = 0;
+            tc_txn.suffix_vsync = 1;
+            tc_txn.alloc_mem();
+            tc_txn.read_bin_frame("data.bin");
             `uvm_send(tc_txn)
         end
         frame_data_seq_done = 1;

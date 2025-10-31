@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.1
+//  Version : 1.1.2
 //
 //  Description
 //
@@ -12,8 +12,8 @@
 //
 //==================================================================================================
 
-class VideoTest extends uvm_test;
-    `uvm_component_utils(VideoTest)
+class VideoBaseTest extends uvm_test;
+    `uvm_component_utils(VideoBaseTest)
 
     localparam DATA_WIDTH = 8;
 
@@ -27,7 +27,7 @@ class VideoTest extends uvm_test;
 
     video_timing_t  video_timing;
 
-    function new(string name="VideoTest", uvm_component parent=null);
+    function new(string name="VideoBaseTest", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
@@ -40,9 +40,10 @@ class VideoTest extends uvm_test;
         uvm_config_db#(uvm_object_wrapper)::set(this,
             "data_env.i_agt.sqr.main_phase",
             "default_sequence",
-            FrameDataSeq #(DATA_TXN)::type_id::get());
+            FrameDataBaseSeq #(DATA_TXN)::type_id::get());
 
         video_timing = '{1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1};
+        video_timing = '{8, 2, 4, 3, 8, 2, 4, 3, 1, 1};
         uvm_config_db #(video_timing_t)::set(this, "data_env.*", "video_timing", video_timing);
         uvm_config_db #(video_timing_t)::set(this, "format_env.*", "video_timing", video_timing);
 
