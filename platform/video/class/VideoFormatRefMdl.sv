@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatRefMdl
-//  Version : 1.0.0
+//  Version : 1.1.0
 //
 //  Description
 //
@@ -47,35 +47,38 @@ class VideoFormatRefMdl #(
 
         forever begin
             for (i = 0; i < v_total; i++) begin
+                exp_txn = TXN::type_id::create("exp_txn");
+                exp_txn.h_total = h_total;
+                exp_txn.alloc_mem();
+
                 for (j = 0; j < h_total; j++) begin
-                    exp_txn = TXN::type_id::create("exp_txn");
 
                     if (i < video_timing.v_sync) begin
-                        exp_txn.vsync = video_timing.v_sync_pos ? 1 : 0;
+                        exp_txn.vsync[j] = video_timing.v_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.vsync = video_timing.v_sync_pos ? 0 : 1;
+                        exp_txn.vsync[j] = video_timing.v_sync_pos ? 0 : 1;
                     end
 
                     if (j < video_timing.h_sync) begin
-                        exp_txn.hsync = video_timing.h_sync_pos ? 1 : 0;
+                        exp_txn.hsync[j] = video_timing.h_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.hsync = video_timing.h_sync_pos ? 0 : 1;
+                        exp_txn.hsync[j] = video_timing.h_sync_pos ? 0 : 1;
                     end
 
                     if ((i >= (video_timing.v_sync + video_timing.v_bp)) &&
                         (i < (video_timing.v_sync + video_timing.v_bp + video_timing.v_active)) &&
                         (j >= (video_timing.h_sync + video_timing.h_bp)) &&
                         (j < (video_timing.h_sync + video_timing.h_bp + video_timing.h_active))) begin
-                        exp_txn.de = 1;
+                        exp_txn.de[j] = 1;
                     end
                     else begin
-                        exp_txn.de = 0;
+                        exp_txn.de[j] = 0;
                     end
-
-                    scb_putp.put(exp_txn);
                 end
+
+                scb_putp.put(exp_txn);
             end
         end
     endtask

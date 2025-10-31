@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatMon
-//  Version : 1.0.0
+//  Version : 1.1.0
 //
 //  Description
 //
@@ -20,6 +20,9 @@ class VideoFormatOutMon #(
     //  variable definition
     virtual interface video_if.mon_mp vif;
 
+    video_timing_t  video_timing;
+    int unsigned h_total;
+
     uvm_analysis_port #(TXN) ap;
 
     function new(string name="VideoFormatOutMon", uvm_component parent=null);
@@ -31,6 +34,10 @@ class VideoFormatOutMon #(
         if(!uvm_config_db #(virtual video_if)::get(this, "", "vif", vif)) begin
             `uvm_fatal(get_name(), "Virtual interface is not set.")
         end
+        if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
+            `uvm_fatal(get_name(), "video timing is not set.")
+        end
+        h_total = video_timing.h_active + video_timing.h_fp + video_timing.h_sync + video_timing.h_bp;
         ap = new("ap", this);
     endfunction
 
@@ -52,7 +59,6 @@ class VideoFormatOutMon #(
         forever begin
             sample_txn(txn);
             ap.write(txn);
-            @vif.cb;
         end
     endtask
 
@@ -60,11 +66,15 @@ class VideoFormatOutMon #(
         output TXN txn;
 
         txn = TXN::type_id::create("txn");
+        txn.h_total = h_total;
+        txn.alloc_mem();
 
-        txn.de = vif.cb.vout_de;
-        txn.hsync = vif.cb.vout_hsync;
-        txn.vsync = vif.cb.vout_vsync;
-        txn.timestamp = vif.cb.clk_cnt;
+        for (int i = 0; i < h_total; i++) begin
+            txn.de[i] = vif.cb.vout_de;
+            txn.hsync[i] = vif.cb.vout_hsync;
+            txn.vsync[i] = vif.cb.vout_vsync;
+            @vif.cb;
+        end
     endtask
 endclass
 

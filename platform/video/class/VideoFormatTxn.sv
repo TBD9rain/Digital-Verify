@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatTxn
-//  Version : 1.0.0
+//  Version : 1.1.0
 //
 //  Description
 //      video format transaction for timing monitor
@@ -21,12 +21,13 @@ class VideoFormatTxn extends uvm_sequence_item;
     //  Variable
     //----------
 
-    bit de;
-    bit hsync;
-    bit vsync;
+    int unsigned h_total = 0;
 
-    //  time stamp
-    longint unsigned timestamp = 0;
+    bit de [];
+    bit hsync [];
+    bit vsync [];
+
+    bit mem_allocated = 0;
 
 
     //----------
@@ -34,11 +35,10 @@ class VideoFormatTxn extends uvm_sequence_item;
     //----------
 
     `uvm_object_param_utils_begin(VideoFormatTxn)
-        `uvm_field_int(de, UVM_ALL_ON)
-        `uvm_field_int(hsync, UVM_ALL_ON)
-        `uvm_field_int(vsync, UVM_ALL_ON)
-
-        `uvm_field_int(timestamp, UVM_ALL_ON | UVM_NOCOMPARE)
+        `uvm_field_int(h_total, UVM_ALL_ON)
+        `uvm_field_array_int(de, UVM_ALL_ON)
+        `uvm_field_array_int(hsync, UVM_ALL_ON)
+        `uvm_field_array_int(vsync, UVM_ALL_ON)
     `uvm_object_utils_end
 
 
@@ -48,6 +48,19 @@ class VideoFormatTxn extends uvm_sequence_item;
 
     function new(string name="VideoFormatTxn");
         super.new(name);
+    endfunction
+
+    function void alloc_mem();
+        if (h_total == 0) begin
+            `uvm_fatal(get_name(), "Htotal is not set.")
+        end
+        if (mem_allocated) begin
+            `uvm_fatal(get_name(), "Htotal format signal memory has been allocated.")
+        end
+        de = new[h_total];
+        hsync = new[h_total];
+        vsync = new[h_total];
+        mem_allocated = 1;
     endfunction
 endclass
 
