@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.1
+//  Version         :   v1.1.2
 //  Title           :   Scb
 //
 //  Description     :   scoreboard class definition
@@ -20,8 +20,6 @@ class Scb #(
     `uvm_component_param_utils(Scb #(ITXN, OTXN, LATENCY))
 
     //  variable definition
-    ITXN imon_txn_q[$];
-    OTXN mdl_txn_q[$];
     uvm_blocking_get_port #(ITXN) imon_getp;
     uvm_blocking_get_port #(OTXN) omon_getp;
     uvm_blocking_get_port #(OTXN) mdl_getp;
@@ -38,9 +36,6 @@ class Scb #(
     endfunction
 
     task main_phase(uvm_phase phase);
-        ITXN itxn_get;
-        OTXN otxn_get;
-
         ITXN itxn;
         OTXN otxn;
 
@@ -48,37 +43,53 @@ class Scb #(
         OTXN expected_output;
         OTXN actual_output;
 
-        fork
-            forever begin
-                imon_getp.get(itxn_get);
-                imon_txn_q.push_front(itxn_get);
-            end
-            forever begin
-                mdl_getp.get(otxn_get);
-                mdl_txn_q.push_front(otxn_get);
-            end
-            forever begin
-                actual_output = OTXN::type_id::create("actual_output");
-                omon_getp.get(otxn);
-                actual_output.copy(otxn);
+        bit imon_txn_got;
+        bit ref_mdl_txn_got;
 
-                if (imon_txn_q.size() > 0 && mdl_txn_q.size() > 0) begin
-                    expected_output = OTXN::type_id::create("expected_output");
-                    otxn = mdl_txn_q.pop_back();
-                    expected_output.copy(otxn);
+        forever begin
+            actual_output = OTXN::type_id::create("actual_output");
+            omon_getp.get(otxn);
+            actual_output.copy(otxn);
 
-                    stimulus_input = ITXN::type_id::create("stimulus_input");
-                    itxn = imon_txn_q.pop_back();
-                    stimulus_input.copy(itxn);
-
-                    value_check(expected_output, actual_output);
-                    latency_check(stimulus_input, actual_output);
+            //  get txn from input monitor
+            imon_txn_got = 0;
+            fork
+                begin
+                    imon_getp.get(itxn);
+                    imon_txn_got = 1;
                 end
-                else begin
-                    `uvm_error("Scb", "unexpected DUT output with no input.")
+                begin
+                    #1;
+                    if (!imon_txn_got) begin
+                        `uvm_fatal("Scb", "no input for DUT output.")
+                    end
                 end
-            end
-        join
+            join_any
+
+            stimulus_input = ITXN::type_id::create("stimulus_input");
+            stimulus_input.copy(itxn);
+
+            //  get txn from reference model
+            ref_mdl_txn_got = 0;
+            fork
+                begin
+                    mdl_getp.get(otxn);
+                    ref_mdl_txn_got = 1;
+                end
+                begin
+                    #1;
+                    if (!ref_mdl_txn_got) begin
+                        `uvm_fatal("Scb", "no expected output for DUT output.")
+                    end
+                end
+            join_any
+
+            expected_output = OTXN::type_id::create("expected_output");
+            expected_output.copy(otxn);
+
+            value_check(expected_output, actual_output);
+            latency_check(stimulus_input, actual_output);
+        end
     endtask
 
     function void value_check(const ref OTXN exp_txn, const ref OTXN act_txn);

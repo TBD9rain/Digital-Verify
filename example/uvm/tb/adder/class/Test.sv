@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   Test
 //
 //  Description     :   test class definition
@@ -53,6 +53,12 @@ class BaseTest extends uvm_test;
         else begin
             $write("\nTest passed.\n");
         end
+    endfunction
+
+    virtual function void final_phase (uvm_phase phase);
+        super.final_phase(phase);
+
+        $stop(2);
     endfunction
 endclass
 
