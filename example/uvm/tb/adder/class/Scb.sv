@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.2
+//  Version         :   v1.1.3
 //  Title           :   Scb
 //
 //  Description     :   scoreboard class definition
@@ -15,7 +15,7 @@
 class Scb #(
     parameter type ITXN = InTxn,
     parameter type OTXN = OutTxn,
-    parameter longint unsigned LATENCY = 1
+    parameter int LATENCY = 1
 ) extends uvm_scoreboard;
     `uvm_component_param_utils(Scb #(ITXN, OTXN, LATENCY))
 

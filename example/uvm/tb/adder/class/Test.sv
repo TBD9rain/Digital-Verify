@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.1
+//  Version         :   v1.1.2
 //  Title           :   Test
 //
 //  Description     :   test class definition
@@ -15,12 +15,11 @@
 class BaseTest extends uvm_test;
     `uvm_component_utils(BaseTest)
 
-    localparam  DATA_IN_WIDTH = 8;
-    localparam  DATA_OUT_WIDTH = 9;
-    localparam  longint unsigned LATENCY = 1;
+    localparam int DATA_WIDTH = 8;
+    localparam int LATENCY = 1;
 
-    localparam type ITXN = InTxn #(DATA_IN_WIDTH);
-    localparam type OTXN = OutTxn #(DATA_OUT_WIDTH);
+    localparam type ITXN = InTxn #(DATA_WIDTH);
+    localparam type OTXN = OutTxn #(DATA_WIDTH);
 
     //  variable definition
     Env #(ITXN, OTXN, LATENCY) env;

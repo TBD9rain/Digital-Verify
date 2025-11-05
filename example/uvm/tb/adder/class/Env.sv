@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   Env
 //
 //  Description     :   environment class definition
@@ -15,7 +15,7 @@
 class Env #(
     parameter type ITXN = InTxn,
     parameter type OTXN = OutTxn,
-    parameter longint unsigned LATENCY = 1
+    parameter int LATENCY = 1
 ) extends uvm_env;
     `uvm_component_param_utils(Env #(ITXN, OTXN, LATENCY))
 

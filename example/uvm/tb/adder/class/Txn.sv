@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.0
+//  Version         :   v1.1.1
 //  Title           :   Txn
 //
 //  Description     :   transaction class definition
@@ -36,11 +36,11 @@ endclass
 
 
 class OutTxn #(
-    parameter   DATA_WIDTH = 9
+    parameter   DATA_WIDTH = 8
 ) extends uvm_sequence_item;
 
     //  variable Definition
-    logic [DATA_WIDTH - 1: 0] sum;
+    logic [DATA_WIDTH - 0: 0] sum;
 
     //  time stamp
     longint unsigned timestamp = 0;
