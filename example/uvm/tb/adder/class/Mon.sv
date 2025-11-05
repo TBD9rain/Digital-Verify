@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.3
+//  Version         :   v1.0.4
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -18,7 +18,8 @@ class InMon #(
     `uvm_component_param_utils(InMon #(TXN))
 
     //  variable definition
-    virtual interface adder_if.mon_mp vif;
+    typedef virtual adder_if#(.DATA_WIDTH (8)).mon_mp mon_vif;
+    mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -28,7 +29,7 @@ class InMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("InMon", "Virtual interface is not set.")
         end
         ap = new("ap", this);
@@ -64,7 +65,8 @@ class OutMon #(
     `uvm_component_param_utils(OutMon #(TXN))
 
     //  variable definition
-    virtual interface adder_if.mon_mp vif;
+    typedef virtual adder_if#(.DATA_WIDTH (8)).mon_mp mon_vif;
+    mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -74,7 +76,7 @@ class OutMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("OutMon", "Virtual interface is not set.")
         end
         ap = new("ap", this);

@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   Drv
 //
 //  Description     :   driver class definition
@@ -18,7 +18,8 @@ class Drv #(
     `uvm_component_param_utils(Drv #(REQTXN))
 
     //  variable definition
-    virtual interface adder_if.drv_mp vif;
+    typedef virtual adder_if#(.DATA_WIDTH (8)).drv_mp drv_vif;
+    drv_vif vif;
 
     function new(string name="Drv", uvm_component parent=null);
         super.new(name, parent);
@@ -26,7 +27,7 @@ class Drv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(drv_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("Drv", "Virtual interface is not set.")
         end
     endfunction

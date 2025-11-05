@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.2
 //  Title           :   adder_tb
 //
 //  Description     :   testbench definition
@@ -22,6 +22,8 @@ module adder_tb;
 
 parameter   CLK_HALF_PERIOD     = 10/2;
 
+parameter   DATA_WIDTH = 8;
+
 
 //=====================
 //  PACKAGE IMPORTATION
@@ -41,10 +43,13 @@ bit clk;
 bit rst_n;
 
 adder_if #(
-    .DATA_WIDTH (8))
+    .DATA_WIDTH (DATA_WIDTH))
 tb_if(
     .clk    (clk),
     .rst_n  (rst_n));
+
+typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).drv_mp drv_vif;
+typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).mon_mp mon_vif;
 
 
 //===================
@@ -52,7 +57,7 @@ tb_if(
 //===================
 
 adder #(
-    .DATA_WIDTH (8))
+    .DATA_WIDTH (DATA_WIDTH))
 u_dut(
     .clk    (tb_if.clk),
     .rst_n  (tb_if.rst_n),
@@ -94,9 +99,9 @@ initial begin
     uvm_config_db#(int)::set(null, "", "recording_detail", 0);
     uvm_config_db#(uvm_bitstream_t)::set(null, "", "recording_detail", 0);
 
-    uvm_config_db#(virtual adder_if)::set(null, "uvm_test_top.env.i_agt.drv", "vif", tb_if);
-    uvm_config_db#(virtual adder_if)::set(null, "uvm_test_top.env.i_agt.mon", "vif", tb_if);
-    uvm_config_db#(virtual adder_if)::set(null, "uvm_test_top.env.o_agt.mon", "vif", tb_if);
+    uvm_config_db#(drv_vif)::set(null, "uvm_test_top.env.i_agt.drv", "vif", tb_if);
+    uvm_config_db#(mon_vif)::set(null, "uvm_test_top.env.i_agt.mon", "vif", tb_if);
+    uvm_config_db#(mon_vif)::set(null, "uvm_test_top.env.o_agt.mon", "vif", tb_if);
 end
 
 initial begin
