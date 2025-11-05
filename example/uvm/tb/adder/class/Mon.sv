@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.4
+//  Version         :   v1.0.5
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -13,12 +13,14 @@
 //==================================================================================================
 
 class InMon #(
-    parameter type TXN = InTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_monitor;
-    `uvm_component_param_utils(InMon #(TXN))
+    `uvm_component_param_utils(InMon #(DATA_WIDTH))
 
     //  variable definition
-    typedef virtual adder_if#(.DATA_WIDTH (8)).mon_mp mon_vif;
+    typedef InTxn #(DATA_WIDTH) TXN;
+    typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).mon_mp mon_vif;
+
     mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;
@@ -60,12 +62,13 @@ endclass
 
 
 class OutMon #(
-    parameter type TXN = OutTxn
+    parameter int DATA_WIDTH = 8,
+    localparam type TXN = OutTxn #(DATA_WIDTH)
 ) extends uvm_monitor;
-    `uvm_component_param_utils(OutMon #(TXN))
+    `uvm_component_param_utils(OutMon #(DATA_WIDTH))
 
     //  variable definition
-    typedef virtual adder_if#(.DATA_WIDTH (8)).mon_mp mon_vif;
+    typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).mon_mp mon_vif;
     mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;

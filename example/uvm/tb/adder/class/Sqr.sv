@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Sqr
 //
 //  Description     :   sequencer class definition
@@ -13,9 +13,10 @@
 //==================================================================================================
 
 class Sqr #(
-    parameter type REQTXN = InTxn
-) extends uvm_sequencer #(.REQ (REQTXN));
-    `uvm_component_param_utils(Sqr #(REQTXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type REQ = InTxn #(DATA_WIDTH)
+) extends uvm_sequencer #(REQ);
+    `uvm_component_param_utils(Sqr #(DATA_WIDTH))
 
     function new(string name="Sqr", uvm_component parent=null);
         super.new(name, parent);

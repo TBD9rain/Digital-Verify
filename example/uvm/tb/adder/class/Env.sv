@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.1
+//  Version         :   v1.1.2
 //  Title           :   Env
 //
 //  Description     :   environment class definition
@@ -13,18 +13,19 @@
 //==================================================================================================
 
 class Env #(
-    parameter type ITXN = InTxn,
-    parameter type OTXN = OutTxn,
-    parameter int LATENCY = 1
+    parameter int DATA_WIDTH = 8
 ) extends uvm_env;
-    `uvm_component_param_utils(Env #(ITXN, OTXN, LATENCY))
+    `uvm_component_param_utils(Env #(DATA_WIDTH))
 
     //  variable definition
-    InAgt #(ITXN) i_agt;
-    OutAgt #(OTXN) o_agt;
-    Cov #(ITXN) cov;
-    Mdl #(ITXN, OTXN) mdl;
-    Scb #(ITXN, OTXN, LATENCY) scb;
+    typedef InTxn #(DATA_WIDTH) ITXN;
+    typedef OutTxn #(DATA_WIDTH) OTXN;
+
+    InAgt #(DATA_WIDTH)i_agt;
+    OutAgt #(DATA_WIDTH)o_agt;
+    Cov #(DATA_WIDTH)cov;
+    Mdl #(DATA_WIDTH)mdl;
+    Scb #(DATA_WIDTH)scb;
 
     uvm_tlm_analysis_fifo #(ITXN) iagt_cov_fifo;
     uvm_tlm_analysis_fifo #(ITXN) iagt_mdl_fifo;
@@ -38,11 +39,11 @@ class Env #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        i_agt = InAgt #(ITXN)::type_id::create("i_agt", this);
-        o_agt = OutAgt #(OTXN)::type_id::create("o_agt", this);
-        cov = Cov #(ITXN)::type_id::create("cov", this);
-        mdl = Mdl #(ITXN, OTXN)::type_id::create("mdl", this);
-        scb = Scb #(ITXN, OTXN, LATENCY)::type_id::create("scb", this);
+        i_agt = InAgt #(DATA_WIDTH)::type_id::create("i_agt", this);
+        o_agt = OutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
+        cov = Cov #(DATA_WIDTH)::type_id::create("cov", this);
+        mdl = Mdl #(DATA_WIDTH)::type_id::create("mdl", this);
+        scb = Scb #(DATA_WIDTH)::type_id::create("scb", this);
 
         uvm_config_db#(uvm_active_passive_enum)::set(this, "i_agt", "is_active", UVM_ACTIVE);
 

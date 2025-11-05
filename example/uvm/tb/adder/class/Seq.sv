@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Seq
 //
 //  Description     :   sequence definition
@@ -13,16 +13,17 @@
 //==================================================================================================
 
 class BaseSeq #(
-    parameter type REQTXN = InTxn
-) extends uvm_sequence #(.REQ (REQTXN));
-    `uvm_object_param_utils(BaseSeq #(REQTXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type REQ = InTxn #(DATA_WIDTH)
+) extends uvm_sequence #(REQ);
+    `uvm_object_param_utils(BaseSeq #(DATA_WIDTH))
 
     function new(string name="BaseSeq");
         super.new(name);
     endfunction
 
     virtual task body();
-        REQTXN tc_txn;
+        REQ tc_txn;
         uvm_phase phase;
 
         if (starting_phase != null) begin

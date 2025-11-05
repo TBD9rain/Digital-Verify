@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.3
+//  Version         :   v1.1.4
 //  Title           :   Scb
 //
 //  Description     :   scoreboard class definition
@@ -13,16 +13,19 @@
 //==================================================================================================
 
 class Scb #(
-    parameter type ITXN = InTxn,
-    parameter type OTXN = OutTxn,
-    parameter int LATENCY = 1
+    parameter int DATA_WIDTH = 8
 ) extends uvm_scoreboard;
-    `uvm_component_param_utils(Scb #(ITXN, OTXN, LATENCY))
+    `uvm_component_param_utils(Scb #(DATA_WIDTH))
 
     //  variable definition
+    typedef InTxn #(DATA_WIDTH) ITXN;
+    typedef OutTxn #(DATA_WIDTH) OTXN;
+
     uvm_blocking_get_port #(ITXN) imon_getp;
     uvm_blocking_get_port #(OTXN) omon_getp;
     uvm_blocking_get_port #(OTXN) mdl_getp;
+
+    int unsigned ref_latency = 0;
 
     function new(string name="Scb", uvm_component parent=null);
         super.new(name, parent);
@@ -30,6 +33,9 @@ class Scb #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        if (!uvm_config_db #(int unsigned)::get(this, "", "ref_latency", ref_latency)) begin
+            `uvm_fatal("Scb", "Reference latency is not set.")
+        end
         imon_getp = new("imon_getp", this);
         omon_getp = new("omon_getp", this);
         mdl_getp = new("mdl_getp", this);
@@ -112,12 +118,12 @@ class Scb #(
         longint unsigned dut_latency;
 
         dut_latency = act_txn.timestamp - stm_txn.timestamp;
-        if (dut_latency == LATENCY) begin
+        if (dut_latency == ref_latency) begin
             `uvm_info("Scb", "DUT latency is as expected.", UVM_MEDIUM)
         end
         else begin
             `uvm_error("Scb", "DUT latency is not as expected.")
-            `uvm_info("Scb", $sformatf("expected latency is %0d clocks.", LATENCY), UVM_NONE)
+            `uvm_info("Scb", $sformatf("expected latency is %0d clocks.", ref_latency), UVM_NONE)
             `uvm_info("Scb", $sformatf("actual latency is %0d clocks.", dut_latency), UVM_NONE)
         end
     endfunction

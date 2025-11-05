@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Mdl
 //
 //  Description     :   reference model class definition
@@ -13,12 +13,14 @@
 //==================================================================================================
 
 class Mdl #(
-    parameter type ITXN = InTxn,
-    parameter type OTXN = OutTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_component;
-    `uvm_component_param_utils(Mdl #(ITXN, OTXN))
+    `uvm_component_param_utils(Mdl #(DATA_WIDTH))
 
     //  variable definition
+    typedef InTxn #(DATA_WIDTH) ITXN;
+    typedef OutTxn #(DATA_WIDTH) OTXN;
+
     uvm_blocking_get_port #(ITXN) imon_getp;
     uvm_blocking_put_port #(OTXN) scb_putp;
 

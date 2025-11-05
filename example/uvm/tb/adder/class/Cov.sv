@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Cov
 //
 //  Description     :   coverage collector class definition
@@ -13,9 +13,10 @@
 //==================================================================================================
 
 class Cov #(
-    parameter type TXN = InTxn
-) extends uvm_subscriber #(.T (TXN));
-    `uvm_component_param_utils(Cov #(TXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type TXN = InTxn #(DATA_WIDTH)
+) extends uvm_subscriber #(TXN);
+    `uvm_component_param_utils(Cov #(DATA_WIDTH))
 
     //  variable definition
     uvm_blocking_get_port #(TXN) imon_getp;

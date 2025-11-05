@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.1.2
+//  Version         :   v1.1.3
 //  Title           :   Test
 //
 //  Description     :   test class definition
@@ -16,13 +16,9 @@ class BaseTest extends uvm_test;
     `uvm_component_utils(BaseTest)
 
     localparam int DATA_WIDTH = 8;
-    localparam int LATENCY = 1;
-
-    localparam type ITXN = InTxn #(DATA_WIDTH);
-    localparam type OTXN = OutTxn #(DATA_WIDTH);
 
     //  variable definition
-    Env #(ITXN, OTXN, LATENCY) env;
+    Env #(DATA_WIDTH) env;
 
     function new(string name="BaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -31,11 +27,12 @@ class BaseTest extends uvm_test;
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         this.set_report_verbosity_level_hier(UVM_LOW);
-        uvm_config_db#(uvm_object_wrapper)::set(this,
+        uvm_config_db #(int unsigned)::set(this, "env.scb", "ref_latency", 1);
+        uvm_config_db #(uvm_object_wrapper)::set(this,
             "env.i_agt.sqr.main_phase",
             "default_sequence",
-            BaseSeq #(ITXN)::type_id::get());
-        env = Env #(ITXN, OTXN, LATENCY)::type_id::create("env", this);
+            BaseSeq #(DATA_WIDTH)::type_id::get());
+        env = Env #(DATA_WIDTH)::type_id::create("env", this);
     endfunction
 
     virtual function void report_phase(uvm_phase phase);
@@ -47,10 +44,18 @@ class BaseTest extends uvm_test;
         err_num = rpt_ser.get_severity_count(UVM_ERROR);
 
         if (err_num) begin
-            $write("\nTest failed.\n");
+            $write("\n");
+            $write("============\n");
+            $write("Test failed.\n");
+            $write("============\n");
+            $write("\n");
         end
         else begin
-            $write("\nTest passed.\n");
+            $write("\n");
+            $write("============\n");
+            $write("Test passed.\n");
+            $write("============\n");
+            $write("\n");
         end
     endfunction
 
