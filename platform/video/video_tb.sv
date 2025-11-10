@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_tb
-//  Version : 1.1.1
+//  Version : 1.1.2
 //
 //  Description
 //
@@ -21,6 +21,8 @@ module video_tb;
 //======================
 
 parameter   CLK_HALF_PERIOD     = 10/2;
+
+parameter DATA_WIDTH = 8;
 
 
 //=====================
@@ -41,10 +43,13 @@ bit clk;
 bit rst_n;
 
 video_if #(
+    .DATA_WIDTH (DATA_WIDTH)
 ) video_if (
     .clk    (clk),
-    .rst_n  (rst_n)
-);
+    .rst_n  (rst_n));
+
+typedef virtual video_if #(DATA_WIDTH).drv_mp drv_vif;
+typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 
 
 //===================
@@ -97,10 +102,10 @@ initial begin
     uvm_config_db #(int)::set(null, "", "recording_detail", 0);
     uvm_config_db #(uvm_bitstream_t)::set(null, "", "recording_detail", 0);
 
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.i_agt.drv", "vif", video_if);
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.i_agt.mon", "vif", video_if);
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.data_env.o_agt.mon", "vif", video_if);
-    uvm_config_db #(virtual video_if)::set(null, "uvm_test_top.format_env.o_agt.mon", "vif", video_if);
+    uvm_config_db #(drv_vif)::set(null, "uvm_test_top.data_env.i_agt.drv", "vif", video_if);
+    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.data_env.i_agt.mon", "vif", video_if);
+    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.data_env.o_agt.mon", "vif", video_if);
+    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.format_env.o_agt.mon", "vif", video_if);
 end
 
 initial begin

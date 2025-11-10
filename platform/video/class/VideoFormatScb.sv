@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatScb
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -12,12 +12,12 @@
 //
 //==================================================================================================
 
-class VideoFormatScb #(
-    parameter type TXN = VideoFormatTxn
-) extends uvm_scoreboard;
-    `uvm_component_param_utils(VideoFormatScb #(TXN))
+class VideoFormatScb extends uvm_scoreboard;
+    `uvm_component_utils(VideoFormatScb)
 
     //  variable definition
+    typedef VideoFormatTxn TXN;
+
     uvm_blocking_get_port #(TXN) omon_getp;
     uvm_blocking_get_port #(TXN) mdl_getp;
 
@@ -63,7 +63,7 @@ class VideoFormatScb #(
                 begin
                     #1;
                     if (~ref_mdl_txn_got) begin
-                        `uvm_fatal("Scb", "no expected output for DUT output.")
+                        `uvm_fatal("VideoFormatScb", "no expected output for DUT output.")
                     end
                 end
             join_any
@@ -81,13 +81,13 @@ class VideoFormatScb #(
 
         txn_equal = exp_txn.compare(act_txn);
         if (txn_equal) begin
-            `uvm_info("Scb", "expected output and actual output match.", UVM_MEDIUM)
+            `uvm_info("VideoFormatScb", "expected output and actual output match.", UVM_MEDIUM)
         end
         else begin
-            `uvm_error("Scb", "expected output and actual output mismatch.")
-            `uvm_info("Scb", "expected output:", UVM_NONE)
+            `uvm_error("VideoFormatScb", "expected output and actual output mismatch.")
+            `uvm_info("VideoFormatScb", "expected output:", UVM_NONE)
             exp_txn.print();
-            `uvm_info("Scb", "actual output:", UVM_NONE)
+            `uvm_info("VideoFormatScb", "actual output:", UVM_NONE)
             act_txn.print();
         end
     endfunction

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatRefMdl
-//  Version : 1.1.0
+//  Version : 1.1.1
 //
 //  Description
 //
@@ -12,12 +12,13 @@
 //
 //==================================================================================================
 
-class VideoFormatRefMdl #(
-    parameter type TXN = VideoFormatTxn
-) extends uvm_component;
-    `uvm_component_param_utils(VideoFormatRefMdl #(TXN))
+class VideoFormatRefMdl extends uvm_component;
+
+    `uvm_component_utils(VideoFormatRefMdl)
 
     //  variable definition
+    typedef VideoFormatTxn TXN;
+
     uvm_blocking_put_port #(TXN) scb_putp;
 
     video_timing_t  video_timing;
@@ -29,7 +30,7 @@ class VideoFormatRefMdl #(
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal(get_name(), "video timing is not set.")
+            `uvm_fatal("VideoFormatRefMdl", "video timing is not set.")
         end
         scb_putp = new("scb_putp", this);
     endfunction

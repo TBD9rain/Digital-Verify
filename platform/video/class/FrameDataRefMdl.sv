@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataRefMdl
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,11 +13,14 @@
 //==================================================================================================
 
 class FrameDataRefMdl #(
-    parameter type TXN = FrameDataTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_component;
-    `uvm_component_param_utils(FrameDataRefMdl #(TXN))
+
+    `uvm_component_param_utils(FrameDataRefMdl #(DATA_WIDTH))
 
     //  variable definition
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+
     uvm_blocking_get_port #(TXN) imon_getp;
     uvm_blocking_put_port #(TXN) scb_putp;
 

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataEnv
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,16 +13,18 @@
 //==================================================================================================
 
 class FrameDataEnv #(
-    parameter type TXN = FrameDataTxn,
-    parameter longint unsigned LATENCY = 1
+    parameter int DATA_WIDTH = 8
 ) extends uvm_env;
-    `uvm_component_param_utils(FrameDataEnv #(TXN, LATENCY))
+
+    `uvm_component_param_utils(FrameDataEnv #(DATA_WIDTH))
 
     //  variable definition
-    FrameDataInAgt #(TXN) i_agt;
-    FrameDataOutAgt #(TXN) o_agt;
-    FrameDataRefMdl #(TXN) mdl;
-    FrameDataScb #(TXN) scb;
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+
+    FrameDataInAgt #(DATA_WIDTH) i_agt;
+    FrameDataOutAgt #(DATA_WIDTH) o_agt;
+    FrameDataRefMdl #(DATA_WIDTH) mdl;
+    FrameDataScb #(DATA_WIDTH) scb;
 
     uvm_tlm_analysis_fifo #(TXN) iagt_mdl_fifo;
     uvm_tlm_analysis_fifo #(TXN) iagt_scb_fifo;
@@ -35,10 +37,10 @@ class FrameDataEnv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        i_agt = FrameDataInAgt #(TXN)::type_id::create("i_agt", this);
-        o_agt = FrameDataOutAgt #(TXN)::type_id::create("o_agt", this);
-        scb = FrameDataScb #(TXN)::type_id::create("scb", this);
-        mdl = FrameDataRefMdl #(TXN)::type_id::create("mdl", this);
+        i_agt = FrameDataInAgt #(DATA_WIDTH)::type_id::create("i_agt", this);
+        o_agt = FrameDataOutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
+        scb = FrameDataScb #(DATA_WIDTH)::type_id::create("scb", this);
+        mdl = FrameDataRefMdl #(DATA_WIDTH)::type_id::create("mdl", this);
 
         iagt_mdl_fifo = new("iagt_mdl_fifo", this);
         iagt_scb_fifo = new("iagt_scb_fifo", this);

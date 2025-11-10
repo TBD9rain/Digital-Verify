@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataAgt
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,14 +13,17 @@
 //==================================================================================================
 
 class FrameDataInAgt #(
-    parameter type TXN = FrameDataTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_agent;
-    `uvm_component_param_utils(FrameDataInAgt #(TXN))
+
+    `uvm_component_param_utils(FrameDataInAgt #(DATA_WIDTH))
 
     //  variable definition
-    FrameDataSqr #(TXN) sqr;
-    FrameDataDrv #(TXN) drv;
-    FrameDataInMon #(TXN) mon;
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+
+    FrameDataSqr #(DATA_WIDTH) sqr;
+    FrameDataDrv #(DATA_WIDTH) drv;
+    FrameDataInMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -34,10 +37,10 @@ class FrameDataInAgt #(
             `uvm_fatal(get_name(), "is_active is not set.")
         end
         if (is_active == UVM_ACTIVE) begin
-            sqr = FrameDataSqr #(TXN)::type_id::create("sqr", this);
-            drv = FrameDataDrv #(TXN)::type_id::create("drv", this);
+            sqr = FrameDataSqr #(DATA_WIDTH)::type_id::create("sqr", this);
+            drv = FrameDataDrv #(DATA_WIDTH)::type_id::create("drv", this);
         end
-        mon = FrameDataInMon #(TXN)::type_id::create("mon", this);
+        mon = FrameDataInMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 
@@ -52,12 +55,15 @@ endclass
 
 
 class FrameDataOutAgt #(
-    parameter type TXN = FrameDataTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_agent;
-    `uvm_component_param_utils(FrameDataOutAgt #(TXN))
+
+    `uvm_component_param_utils(FrameDataOutAgt #(DATA_WIDTH))
 
     //  variable definition
-    FrameDataOutMon #(TXN) mon;
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+
+    FrameDataOutMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -67,7 +73,7 @@ class FrameDataOutAgt #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        mon = FrameDataOutMon #(TXN)::type_id::create("mon", this);
+        mon = FrameDataOutMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 

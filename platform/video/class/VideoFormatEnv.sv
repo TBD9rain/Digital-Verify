@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatEnv
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,14 +13,17 @@
 //==================================================================================================
 
 class VideoFormatEnv #(
-    parameter type TXN = VideoFormatTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_env;
-    `uvm_component_param_utils(VideoFormatEnv #(TXN))
+
+    `uvm_component_param_utils(VideoFormatEnv #(DATA_WIDTH))
 
     //  variable definition
-    VideoFormatOutAgt #(TXN) o_agt;
-    VideoFormatRefMdl #(TXN) mdl;
-    VideoFormatScb #(TXN) scb;
+    typedef VideoFormatTxn TXN;
+
+    VideoFormatOutAgt #(DATA_WIDTH) o_agt;
+    VideoFormatRefMdl mdl;
+    VideoFormatScb scb;
 
     uvm_tlm_analysis_fifo #(TXN) oagt_scb_fifo;
     uvm_tlm_fifo #(TXN) mdl_scb_fifo;
@@ -31,9 +34,9 @@ class VideoFormatEnv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        o_agt = VideoFormatOutAgt #(TXN)::type_id::create("o_agt", this);
-        mdl = VideoFormatRefMdl #(TXN)::type_id::create("mdl", this);
-        scb = VideoFormatScb #(TXN)::type_id::create("scb", this);
+        o_agt = VideoFormatOutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
+        mdl = VideoFormatRefMdl::type_id::create("mdl", this);
+        scb = VideoFormatScb::type_id::create("scb", this);
 
         oagt_scb_fifo = new("oagt_scb_fifo", this);
         mdl_scb_fifo = new("mdl_scb_fifo", this);

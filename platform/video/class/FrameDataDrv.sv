@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataDrv
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,14 +13,17 @@
 //==================================================================================================
 
 class FrameDataDrv #(
-    parameter type REQTXN = FrameDataTxn
-) extends uvm_driver #(.REQ (REQTXN));
-    `uvm_component_param_utils(FrameDataDrv #(REQTXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type REQ = FrameDataTxn
+) extends uvm_driver #(.REQ (REQ));
+
+    `uvm_component_param_utils(FrameDataDrv #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface video_if.drv_mp vif;
+    typedef virtual video_if #(DATA_WIDTH).drv_mp drv_vif;
 
-    video_timing_t  video_timing;
+    drv_vif vif;
+    video_timing_t video_timing;
 
     function new(string name="FrameDataDrv", uvm_component parent=null);
         super.new(name, parent);
@@ -28,11 +31,11 @@ class FrameDataDrv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual video_if)::get(this, "", "vif", vif)) begin
-            `uvm_fatal(get_name(), "Virtual interface is not set.")
+        if(!uvm_config_db #(drv_vif)::get(this, "", "vif", vif)) begin
+            `uvm_fatal("FrameDataDrv", "Virtual interface is not set.")
         end
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal(get_name(), "video timing is not set.")
+            `uvm_fatal("FrameDataDrv", "video timing is not set.")
         end
     endfunction
 
@@ -54,7 +57,7 @@ class FrameDataDrv #(
         int x, y;
 
         if (txn.frame_height != video_timing.v_active || txn.frame_width != video_timing.h_active) begin
-            `uvm_fatal(get_name(), "video timing does not match transaction frame size.")
+            `uvm_fatal("FrameDataDrv", "video timing does not match transaction frame size.")
         end
 
         vif.cb.vin_de   <= 'b0;

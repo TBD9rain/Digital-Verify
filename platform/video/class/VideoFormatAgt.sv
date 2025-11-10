@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoFormatAgt
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,12 +13,15 @@
 //==================================================================================================
 
 class VideoFormatOutAgt #(
-    parameter type TXN = VideoFormatTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_agent;
-    `uvm_component_param_utils(VideoFormatOutAgt #(TXN))
+
+    `uvm_component_param_utils(VideoFormatOutAgt #(DATA_WIDTH))
 
     //  variable definition
-    VideoFormatOutMon #(TXN) mon;
+    typedef VideoFormatTxn TXN;
+
+    VideoFormatOutMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -28,7 +31,7 @@ class VideoFormatOutAgt #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        mon = VideoFormatOutMon #(TXN)::type_id::create("mon", this);
+        mon = VideoFormatOutMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 

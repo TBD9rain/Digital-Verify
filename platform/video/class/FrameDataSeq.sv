@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataSeq
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -13,21 +13,22 @@
 //==================================================================================================
 
 class FrameDataBaseSeq #(
-    parameter type REQTXN = FrameDataTxn
-) extends uvm_sequence #(.REQ (REQTXN));
-    `uvm_object_param_utils(FrameDataBaseSeq #(REQTXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type REQ = FrameDataTxn #(DATA_WIDTH)
+) extends uvm_sequence #(.REQ (REQ));
+
+    `uvm_object_param_utils(FrameDataBaseSeq #(DATA_WIDTH))
 
     //  handler to sequencer
     `uvm_declare_p_sequencer(FrameDataSqr)
 
-    bit frame_data_seq_done;
 
     function new(string name="FrameDataBaseSeq");
         super.new(name);
     endfunction
 
     virtual task body();
-        REQTXN tc_txn;
+        REQ tc_txn;
 
         if (starting_phase != null) begin
             starting_phase.raise_objection(this);
@@ -52,8 +53,7 @@ class FrameDataBaseSeq #(
             tc_txn.read_bin_frame("data.bin");
             `uvm_send(tc_txn)
         end
-        frame_data_seq_done = 1;
-        uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", frame_data_seq_done);
+        uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", 1);
         //  delay before drop objection
         starting_phase.phase_done.set_drain_time(this, 1000ns);
         if (starting_phase != null) begin

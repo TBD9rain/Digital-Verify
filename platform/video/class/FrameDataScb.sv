@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataScb
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -13,15 +13,19 @@
 //==================================================================================================
 
 class FrameDataScb #(
-    parameter type TXN = FrameDataTxn,
-    parameter longint unsigned LATENCY = 1
+    parameter int DATA_WIDTH = 8
 ) extends uvm_scoreboard;
-    `uvm_component_param_utils(FrameDataScb #(TXN, LATENCY))
+
+    `uvm_component_param_utils(FrameDataScb #(DATA_WIDTH))
 
     //  variable definition
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+
     uvm_blocking_get_port #(TXN) imon_getp;
     uvm_blocking_get_port #(TXN) omon_getp;
     uvm_blocking_get_port #(TXN) mdl_getp;
+
+    int unsigned ref_latency = 0;
 
     function new(string name="FrameDataScb", uvm_component parent=null);
         super.new(name, parent);
@@ -29,6 +33,9 @@ class FrameDataScb #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        if (!uvm_config_db #(int unsigned)::get(this, "", "ref_latency", ref_latency)) begin
+            `uvm_fatal("FrameDataScb", "Reference latency is not set.")
+        end
         imon_getp = new("imon_getp", this);
         omon_getp = new("omon_getp", this);
         mdl_getp = new("mdl_getp", this);
@@ -60,7 +67,7 @@ class FrameDataScb #(
                 begin
                     #1;
                     if (!imon_txn_got) begin
-                        `uvm_fatal("Scb", "no input for DUT output.")
+                        `uvm_fatal("FrameDataScb", "no input for DUT output.")
                     end
                 end
             join_any
@@ -78,7 +85,7 @@ class FrameDataScb #(
                 begin
                     #1;
                     if (!ref_mdl_txn_got) begin
-                        `uvm_fatal("Scb", "no expected output for DUT output.")
+                        `uvm_fatal("FrameDataScb", "no expected output for DUT output.")
                     end
                 end
             join_any
@@ -97,13 +104,13 @@ class FrameDataScb #(
 
         txn_equal = exp_txn.compare(act_txn);
         if (txn_equal) begin
-            `uvm_info("Scb", "expected output and actual output match.", UVM_MEDIUM)
+            `uvm_info("FrameDataScb", "expected output and actual output match.", UVM_MEDIUM)
         end
         else begin
-            `uvm_error("Scb", "expected output and actual output mismatch.")
-            `uvm_info("Scb", "expected output:", UVM_NONE)
+            `uvm_error("FrameDataScb", "expected output and actual output mismatch.")
+            `uvm_info("FrameDataScb", "expected output:", UVM_NONE)
             exp_txn.print();
-            `uvm_info("Scb", "actual output:", UVM_NONE)
+            `uvm_info("FrameDataScb", "actual output:", UVM_NONE)
             act_txn.print();
         end
     endfunction
@@ -112,13 +119,13 @@ class FrameDataScb #(
         longint unsigned dut_latency;
 
         dut_latency = act_txn.timestamp - stm_txn.timestamp;
-        if (dut_latency == LATENCY) begin
-            `uvm_info("Scb", "DUT latency is as expected.", UVM_MEDIUM)
+        if (dut_latency == ref_latency) begin
+            `uvm_info("FrameDataScb", "DUT latency is as expected.", UVM_MEDIUM)
         end
         else begin
-            `uvm_error("Scb", "DUT latency is not as expected.")
-            `uvm_info("Scb", $sformatf("expected latency is %0d clocks.", LATENCY), UVM_NONE)
-            `uvm_info("Scb", $sformatf("actual latency is %0d clocks.", dut_latency), UVM_NONE)
+            `uvm_error("FrameDataScb", "DUT latency is not as expected.")
+            `uvm_info("FrameDataScb", $sformatf("expected latency is %0d clocks.", ref_latency), UVM_NONE)
+            `uvm_info("FrameDataScb", $sformatf("actual latency is %0d clocks.", dut_latency), UVM_NONE)
         end
     endfunction
 endclass

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataSqr
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,9 +13,11 @@
 //==================================================================================================
 
 class FrameDataSqr #(
-    parameter type REQTXN = FrameDataTxn
-) extends uvm_sequencer #(.REQ (REQTXN));
-    `uvm_component_param_utils(FrameDataSqr #(REQTXN))
+    parameter DATA_WIDTH = 8,
+    localparam type REQ = FrameDataTxn
+) extends uvm_sequencer #(.REQ (REQ));
+
+    `uvm_component_param_utils(FrameDataSqr #(DATA_WIDTH))
 
     video_timing_t video_timing;
 
@@ -27,7 +29,7 @@ class FrameDataSqr #(
         super.build_phase(phase);
 
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal(get_name(), "video timing is not set.")
+            `uvm_fatal("FrameDataSqr", "video timing is not set.")
         end
     endfunction
 endclass

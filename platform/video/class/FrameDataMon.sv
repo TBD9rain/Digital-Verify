@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : FrameDataMon
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -13,14 +13,17 @@
 //==================================================================================================
 
 class FrameDataInMon #(
-    parameter type TXN = FrameDataTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_monitor;
-    `uvm_component_param_utils(FrameDataInMon #(TXN))
+
+    `uvm_component_param_utils(FrameDataInMon #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface video_if.mon_mp vif;
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+    typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 
-    video_timing_t  video_timing;
+    mon_vif vif;
+    video_timing_t video_timing;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -30,11 +33,11 @@ class FrameDataInMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual video_if)::get(this, "", "vif", vif)) begin
-            `uvm_fatal(get_name(), "Virtual interface is not set.")
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
+            `uvm_fatal("FrameDataInMon", "Virtual interface is not set.")
         end
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal(get_name(), "video timing is not set.")
+            `uvm_fatal("FrameDataInMon", "video timing is not set.")
         end
         ap = new("ap", this);
     endfunction
@@ -71,13 +74,16 @@ endclass
 
 
 class FrameDataOutMon #(
-    parameter type TXN = FrameDataTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_monitor;
-    `uvm_component_param_utils(FrameDataOutMon #(TXN))
+
+    `uvm_component_param_utils(FrameDataOutMon #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface video_if.mon_mp vif;
+    typedef FrameDataTxn #(DATA_WIDTH) TXN;
+    typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 
+    mon_vif vif;
     video_timing_t  video_timing;
 
     uvm_analysis_port #(TXN) ap;
@@ -88,11 +94,11 @@ class FrameDataOutMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual video_if)::get(this, "", "vif", vif)) begin
-            `uvm_fatal(get_name(), "Virtual interface is not set.")
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
+            `uvm_fatal("FrameDataOutMon", "Virtual interface is not set.")
         end
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal(get_name(), "video timing is not set.")
+            `uvm_fatal("FrameDataOutMon", "video timing is not set.")
         end
         ap = new("ap", this);
     endfunction
