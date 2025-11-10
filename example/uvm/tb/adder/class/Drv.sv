@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.1
+//  Version         :   v1.0.3
 //  Title           :   Drv
 //
 //  Description     :   driver class definition
@@ -13,12 +13,14 @@
 //==================================================================================================
 
 class Drv #(
-    parameter type REQTXN = InTxn
-) extends uvm_driver #(.REQ (REQTXN));
-    `uvm_component_param_utils(Drv #(REQTXN))
+    parameter int DATA_WIDTH = 8,
+    localparam type TXN = InTxn #(DATA_WIDTH)
+) extends uvm_driver #(TXN);
+    `uvm_component_param_utils(Drv #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface adder_if.drv_mp vif;
+    typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).drv_mp drv_vif;
+    drv_vif vif;
 
     function new(string name="Drv", uvm_component parent=null);
         super.new(name, parent);
@@ -26,7 +28,7 @@ class Drv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(drv_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("Drv", "Virtual interface is not set.")
         end
     endfunction
@@ -49,7 +51,7 @@ class Drv #(
     endtask
 
     task drive_req;
-        input REQ txn;
+        input TXN txn;
 
         vif.cb.data_in_vld <= 1;
         vif.cb.addend0 <= txn.addend0;

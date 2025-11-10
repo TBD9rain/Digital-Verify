@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.0
+//  Version         :   v1.0.1
 //  Title           :   Agt
 //
 //  Description     :   agent class definition
@@ -13,14 +13,16 @@
 //==================================================================================================
 
 class InAgt #(
-    parameter type TXN = InTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_agent;
-    `uvm_component_param_utils(InAgt #(TXN))
+    `uvm_component_param_utils(InAgt #(DATA_WIDTH))
 
     //  variable definition
-    Sqr #(TXN) sqr;
-    Drv #(TXN) drv;
-    InMon #(TXN) mon;
+    typedef InTxn #(DATA_WIDTH) TXN;
+
+    Sqr #(DATA_WIDTH) sqr;
+    Drv #(DATA_WIDTH) drv;
+    InMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -34,10 +36,10 @@ class InAgt #(
             `uvm_fatal("Agt", "is_active is not set.")
         end
         if (is_active == UVM_ACTIVE) begin
-            sqr = Sqr #(TXN)::type_id::create("sqr", this);
-            drv = Drv #(TXN)::type_id::create("drv", this);
+            sqr = Sqr #(DATA_WIDTH)::type_id::create("sqr", this);
+            drv = Drv #(DATA_WIDTH)::type_id::create("drv", this);
         end
-        mon = InMon #(TXN)::type_id::create("mon", this);
+        mon = InMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 
@@ -52,12 +54,13 @@ endclass
 
 
 class OutAgt #(
-    parameter type TXN = OutTxn
+    parameter int DATA_WIDTH = 8,
+    localparam type TXN = OutTxn #(DATA_WIDTH)
 ) extends uvm_agent;
-    `uvm_component_param_utils(OutAgt #(TXN))
+    `uvm_component_param_utils(OutAgt #(DATA_WIDTH))
 
     //  variable definition
-    OutMon #(TXN) mon;
+    OutMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -67,7 +70,7 @@ class OutAgt #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        mon = OutMon #(TXN)::type_id::create("mon", this);
+        mon = OutMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 

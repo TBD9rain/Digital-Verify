@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.3
+//  Version         :   v1.0.5
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -13,12 +13,15 @@
 //==================================================================================================
 
 class InMon #(
-    parameter type TXN = InTxn
+    parameter int DATA_WIDTH = 8
 ) extends uvm_monitor;
-    `uvm_component_param_utils(InMon #(TXN))
+    `uvm_component_param_utils(InMon #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface adder_if.mon_mp vif;
+    typedef InTxn #(DATA_WIDTH) TXN;
+    typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).mon_mp mon_vif;
+
+    mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -28,7 +31,7 @@ class InMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("InMon", "Virtual interface is not set.")
         end
         ap = new("ap", this);
@@ -59,12 +62,14 @@ endclass
 
 
 class OutMon #(
-    parameter type TXN = OutTxn
+    parameter int DATA_WIDTH = 8,
+    localparam type TXN = OutTxn #(DATA_WIDTH)
 ) extends uvm_monitor;
-    `uvm_component_param_utils(OutMon #(TXN))
+    `uvm_component_param_utils(OutMon #(DATA_WIDTH))
 
     //  variable definition
-    virtual interface adder_if.mon_mp vif;
+    typedef virtual adder_if#(.DATA_WIDTH (DATA_WIDTH)).mon_mp mon_vif;
+    mon_vif vif;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -74,7 +79,7 @@ class OutMon #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if(!uvm_config_db #(virtual adder_if)::get(this, "", "vif", vif)) begin
+        if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("OutMon", "Virtual interface is not set.")
         end
         ap = new("ap", this);
