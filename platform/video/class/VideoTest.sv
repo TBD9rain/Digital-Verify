@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.3
+//  Version : 1.1.4
 //
 //  Description
 //
@@ -20,7 +20,7 @@ class VideoBaseTest extends uvm_test;
 
     //  variable definition
     FrameDataEnv #(DATA_WIDTH) data_env;
-    VideoFormatEnv #(DATA_WIDTH) format_env;
+    FrameRowCtrlEnv #(DATA_WIDTH) format_env;
 
     video_timing_t  video_timing;
 
@@ -39,7 +39,7 @@ class VideoBaseTest extends uvm_test;
         uvm_config_db #(int unsigned)::set(this, "data_env.scb", "ref_latency", 1);
 
         data_env = FrameDataEnv #(DATA_WIDTH)::type_id::create("data_env", this);
-        format_env = VideoFormatEnv #(DATA_WIDTH)::type_id::create("format_env", this);
+        format_env = FrameRowCtrlEnv #(DATA_WIDTH)::type_id::create("format_env", this);
 
         uvm_config_db#(uvm_object_wrapper)::set(this,
             "data_env.i_agt.sqr.main_phase",

@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatScb
-//  Version : 1.0.1
+//  Title   : FrameRowCtrlScb
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -12,18 +12,18 @@
 //
 //==================================================================================================
 
-class VideoFormatScb extends uvm_scoreboard;
-    `uvm_component_utils(VideoFormatScb)
+class FrameRowCtrlScb extends uvm_scoreboard;
+    `uvm_component_utils(FrameRowCtrlScb)
 
     //  variable definition
-    typedef VideoFormatTxn TXN;
+    typedef FrameRowCtrlTxn TXN;
 
     uvm_blocking_get_port #(TXN) omon_getp;
     uvm_blocking_get_port #(TXN) mdl_getp;
 
     bit frame_data_seq_done;
 
-    function new(string name="VideoFormatScb", uvm_component parent=null);
+    function new(string name="FrameRowCtrlScb", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
@@ -63,7 +63,7 @@ class VideoFormatScb extends uvm_scoreboard;
                 begin
                     #1;
                     if (~ref_mdl_txn_got) begin
-                        `uvm_fatal("VideoFormatScb", "no expected output for DUT output.")
+                        `uvm_fatal("FrameRowCtrlScb", "no expected output for DUT output.")
                     end
                 end
             join_any
@@ -81,13 +81,13 @@ class VideoFormatScb extends uvm_scoreboard;
 
         txn_equal = exp_txn.compare(act_txn);
         if (txn_equal) begin
-            `uvm_info("VideoFormatScb", "expected output and actual output match.", UVM_MEDIUM)
+            `uvm_info("FrameRowCtrlScb", "expected output and actual output match.", UVM_MEDIUM)
         end
         else begin
-            `uvm_error("VideoFormatScb", "expected output and actual output mismatch.")
-            `uvm_info("VideoFormatScb", "expected output:", UVM_NONE)
+            `uvm_error("FrameRowCtrlScb", "expected output and actual output mismatch.")
+            `uvm_info("FrameRowCtrlScb", "expected output:", UVM_NONE)
             exp_txn.print();
-            `uvm_info("VideoFormatScb", "actual output:", UVM_NONE)
+            `uvm_info("FrameRowCtrlScb", "actual output:", UVM_NONE)
             act_txn.print();
         end
     endfunction

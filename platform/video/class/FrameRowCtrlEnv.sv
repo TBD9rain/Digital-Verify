@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatEnv
-//  Version : 1.0.1
+//  Title   : FrameRowCtrlEnv
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -12,31 +12,31 @@
 //
 //==================================================================================================
 
-class VideoFormatEnv #(
+class FrameRowCtrlEnv #(
     parameter int DATA_WIDTH = 8
 ) extends uvm_env;
 
-    `uvm_component_param_utils(VideoFormatEnv #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameRowCtrlEnv #(DATA_WIDTH))
 
     //  variable definition
-    typedef VideoFormatTxn TXN;
+    typedef FrameRowCtrlTxn TXN;
 
-    VideoFormatOutAgt #(DATA_WIDTH) o_agt;
-    VideoFormatRefMdl mdl;
-    VideoFormatScb scb;
+    FrameRowCtrlOutAgt #(DATA_WIDTH) o_agt;
+    FrameRowCtrlRefMdl mdl;
+    FrameRowCtrlScb scb;
 
     uvm_tlm_analysis_fifo #(TXN) oagt_scb_fifo;
     uvm_tlm_fifo #(TXN) mdl_scb_fifo;
 
-    function new(string name="VideoFormatEnv", uvm_component parent=null);
+    function new(string name="FrameRowCtrlEnv", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        o_agt = VideoFormatOutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
-        mdl = VideoFormatRefMdl::type_id::create("mdl", this);
-        scb = VideoFormatScb::type_id::create("scb", this);
+        o_agt = FrameRowCtrlOutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
+        mdl = FrameRowCtrlRefMdl::type_id::create("mdl", this);
+        scb = FrameRowCtrlScb::type_id::create("scb", this);
 
         oagt_scb_fifo = new("oagt_scb_fifo", this);
         mdl_scb_fifo = new("mdl_scb_fifo", this);

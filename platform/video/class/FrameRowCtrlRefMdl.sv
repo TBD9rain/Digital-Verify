@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatRefMdl
-//  Version : 1.1.1
+//  Title   : FrameRowCtrlRefMdl
+//  Version : 1.1.2
 //
 //  Description
 //
@@ -12,25 +12,25 @@
 //
 //==================================================================================================
 
-class VideoFormatRefMdl extends uvm_component;
+class FrameRowCtrlRefMdl extends uvm_component;
 
-    `uvm_component_utils(VideoFormatRefMdl)
+    `uvm_component_utils(FrameRowCtrlRefMdl)
 
     //  variable definition
-    typedef VideoFormatTxn TXN;
+    typedef FrameRowCtrlTxn TXN;
 
     uvm_blocking_put_port #(TXN) scb_putp;
 
     video_timing_t  video_timing;
 
-    function new(string name="VideoFormatRefMdl", uvm_component parent=null);
+    function new(string name="FrameRowCtrlRefMdl", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal("VideoFormatRefMdl", "video timing is not set.")
+            `uvm_fatal("FrameRowCtrlRefMdl", "video timing is not set.")
         end
         scb_putp = new("scb_putp", this);
     endfunction

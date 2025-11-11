@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatMon
-//  Version : 1.1.1
+//  Title   : FrameRowCtrlMon
+//  Version : 1.1.2
 //
 //  Description
 //
@@ -12,15 +12,15 @@
 //
 //==================================================================================================
 
-class VideoFormatOutMon #(
+class FrameRowCtrlOutMon #(
     parameter int DATA_WIDTH = 8
 ) extends uvm_monitor;
 
-    `uvm_component_param_utils(VideoFormatOutMon #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameRowCtrlOutMon #(DATA_WIDTH))
 
     //  variable definition
     typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
-    typedef VideoFormatTxn TXN;
+    typedef FrameRowCtrlTxn TXN;
 
     virtual interface video_if.mon_mp vif;
 
@@ -28,17 +28,17 @@ class VideoFormatOutMon #(
 
     uvm_analysis_port #(TXN) ap;
 
-    function new(string name="VideoFormatOutMon", uvm_component parent=null);
+    function new(string name="FrameRowCtrlOutMon", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
-            `uvm_fatal("VideoFormatOutMon", "Virtual interface is not set.")
+            `uvm_fatal("FrameRowCtrlOutMon", "Virtual interface is not set.")
         end
         if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
-            `uvm_fatal("VideoFormatOutMon", "video timing is not set.")
+            `uvm_fatal("FrameRowCtrlOutMon", "video timing is not set.")
         end
         ap = new("ap", this);
     endfunction

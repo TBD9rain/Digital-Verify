@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_pkg
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -42,12 +42,12 @@ typedef struct packed {
 `include "FrameDataEnv.sv"
 `include "FrameDataSeq.sv"
 
-`include "VideoFormatTxn.sv"
-`include "VideoFormatMon.sv"
-`include "VideoFormatAgt.sv"
-`include "VideoFormatRefMdl.sv"
-`include "VideoFormatScb.sv"
-`include "VideoFormatEnv.sv"
+`include "FrameRowCtrlTxn.sv"
+`include "FrameRowCtrlMon.sv"
+`include "FrameRowCtrlAgt.sv"
+`include "FrameRowCtrlRefMdl.sv"
+`include "FrameRowCtrlScb.sv"
+`include "FrameRowCtrlEnv.sv"
 
 `include "VideoTest.sv"
 

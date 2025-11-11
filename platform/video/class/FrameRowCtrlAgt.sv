@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatAgt
-//  Version : 1.0.1
+//  Title   : FrameRowCtrlAgt
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -12,26 +12,26 @@
 //
 //==================================================================================================
 
-class VideoFormatOutAgt #(
+class FrameRowCtrlOutAgt #(
     parameter int DATA_WIDTH = 8
 ) extends uvm_agent;
 
-    `uvm_component_param_utils(VideoFormatOutAgt #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameRowCtrlOutAgt #(DATA_WIDTH))
 
     //  variable definition
-    typedef VideoFormatTxn TXN;
+    typedef FrameRowCtrlTxn TXN;
 
-    VideoFormatOutMon #(DATA_WIDTH) mon;
+    FrameRowCtrlOutMon #(DATA_WIDTH) mon;
 
     uvm_analysis_port #(TXN) ap;
 
-    function new(string name="VideoFormatOutAgt", uvm_component parent=null);
+    function new(string name="FrameRowCtrlOutAgt", uvm_component parent=null);
         super.new(name, parent);
     endfunction
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        mon = VideoFormatOutMon #(DATA_WIDTH)::type_id::create("mon", this);
+        mon = FrameRowCtrlOutMon #(DATA_WIDTH)::type_id::create("mon", this);
         ap = new("ap", this);
     endfunction
 

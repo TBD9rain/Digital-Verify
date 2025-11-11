@@ -1,8 +1,8 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : VideoFormatTxn
-//  Version : 1.1.0
+//  Title   : FrameRowCtrlTxn
+//  Version : 1.1.1
 //
 //  Description
 //      video format transaction for timing monitor
@@ -15,7 +15,7 @@
 //
 //==================================================================================================
 
-class VideoFormatTxn extends uvm_sequence_item;
+class FrameRowCtrlTxn extends uvm_sequence_item;
 
     //----------
     //  Variable
@@ -34,7 +34,7 @@ class VideoFormatTxn extends uvm_sequence_item;
     //  Registry
     //----------
 
-    `uvm_object_param_utils_begin(VideoFormatTxn)
+    `uvm_object_param_utils_begin(FrameRowCtrlTxn)
         `uvm_field_int(h_total, UVM_ALL_ON)
         `uvm_field_array_int(de, UVM_ALL_ON)
         `uvm_field_array_int(hsync, UVM_ALL_ON)
@@ -46,7 +46,7 @@ class VideoFormatTxn extends uvm_sequence_item;
     //  Method
     //--------
 
-    function new(string name="VideoFormatTxn");
+    function new(string name="FrameRowCtrlTxn");
         super.new(name);
     endfunction
 
