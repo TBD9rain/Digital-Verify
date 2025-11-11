@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_pkg
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -32,22 +32,22 @@ typedef struct packed {
 } video_timing_t;
 
 
-`include "FrameDataTxn.sv"
-`include "FrameDataSqr.sv"
-`include "FrameDataDrv.sv"
-`include "FrameDataMon.sv"
-`include "FrameDataAgt.sv"
-`include "FrameDataRefMdl.sv"
-`include "FrameDataScb.sv"
-`include "FrameDataEnv.sv"
-`include "FrameDataSeq.sv"
+`include "FrameData/Txn.sv"
+`include "FrameData/Sqr.sv"
+`include "FrameData/Drv.sv"
+`include "FrameData/Mon.sv"
+`include "FrameData/Agt.sv"
+`include "FrameData/RefMdl.sv"
+`include "FrameData/Scb.sv"
+`include "FrameData/Env.sv"
+`include "FrameData/Seq.sv"
 
-`include "FrameRowCtrlTxn.sv"
-`include "FrameRowCtrlMon.sv"
-`include "FrameRowCtrlAgt.sv"
-`include "FrameRowCtrlRefMdl.sv"
-`include "FrameRowCtrlScb.sv"
-`include "FrameRowCtrlEnv.sv"
+`include "FrameRowCtrl/Txn.sv"
+`include "FrameRowCtrl/Mon.sv"
+`include "FrameRowCtrl/Agt.sv"
+`include "FrameRowCtrl/RefMdl.sv"
+`include "FrameRowCtrl/Scb.sv"
+`include "FrameRowCtrl/Env.sv"
 
 `include "VideoTest.sv"
 

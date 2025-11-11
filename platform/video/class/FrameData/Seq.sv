@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : FrameDataSeq
+//  Title   : Seq
 //  Version : 1.0.3
 //
 //  Description

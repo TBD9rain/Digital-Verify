@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : FrameDataRefMdl
+//  Title   : RefMdl
 //  Version : 1.0.1
 //
 //  Description

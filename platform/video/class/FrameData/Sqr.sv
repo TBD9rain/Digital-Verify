@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project : Video Verification Platform
-//  Title   : FrameDataSqr
+//  Title   : Sqr
 //  Version : 1.0.1
 //
 //  Description
