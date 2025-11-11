@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
 //
@@ -23,7 +23,7 @@ class FrameDataInMon #(
     typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 
     mon_vif vif;
-    video_timing_t video_timing;
+    FrameFormatObj frame_format;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -36,7 +36,7 @@ class FrameDataInMon #(
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("FrameDataInMon", "Virtual interface is not set.")
         end
-        if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
+        if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
             `uvm_fatal("FrameDataInMon", "video timing is not set.")
         end
         ap = new("ap", this);
@@ -56,8 +56,8 @@ class FrameDataInMon #(
         int unsigned pixel_idx;
 
         txn = TXN::type_id::create("txn");
-        txn.frame_height = video_timing.v_active;
-        txn.frame_width = video_timing.h_active;
+        txn.frame_height = frame_format.v_active;
+        txn.frame_width = frame_format.h_active;
         txn.alloc_mem();
         pixel_idx = 0;
 
@@ -84,7 +84,7 @@ class FrameDataOutMon #(
     typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 
     mon_vif vif;
-    video_timing_t  video_timing;
+    FrameFormatObj  frame_format;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -97,7 +97,7 @@ class FrameDataOutMon #(
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("FrameDataOutMon", "Virtual interface is not set.")
         end
-        if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
+        if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
             `uvm_fatal("FrameDataOutMon", "video timing is not set.")
         end
         ap = new("ap", this);
@@ -117,8 +117,8 @@ class FrameDataOutMon #(
         int unsigned pixel_idx;
 
         txn = TXN::type_id::create("txn");
-        txn.frame_height = video_timing.v_active;
-        txn.frame_width = video_timing.h_active;
+        txn.frame_height = frame_format.v_active;
+        txn.frame_width = frame_format.h_active;
         txn.alloc_mem();
         pixel_idx = 0;
 

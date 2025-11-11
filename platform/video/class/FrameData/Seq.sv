@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Seq
-//  Version : 1.0.3
+//  Version : 1.0.4
 //
 //  Description
 //
@@ -35,8 +35,8 @@ class FrameDataBaseSeq #(
 
             `uvm_create(tc_txn)
             //  transaction prepare
-            tc_txn.frame_width = p_sequencer.video_timing.h_active;
-            tc_txn.frame_height = p_sequencer.video_timing.v_active;
+            tc_txn.frame_width = p_sequencer.frame_format.h_active;
+            tc_txn.frame_height = p_sequencer.frame_format.v_active;
             tc_txn.prefix_vsync = 1;
             tc_txn.suffix_vsync = 1;
             tc_txn.alloc_mem();
@@ -45,8 +45,8 @@ class FrameDataBaseSeq #(
 
             `uvm_create(tc_txn)
             //  transaction prepare
-            tc_txn.frame_width = p_sequencer.video_timing.h_active;
-            tc_txn.frame_height = p_sequencer.video_timing.v_active;
+            tc_txn.frame_width = p_sequencer.frame_format.h_active;
+            tc_txn.frame_height = p_sequencer.frame_format.v_active;
             tc_txn.prefix_vsync = 0;
             tc_txn.suffix_vsync = 1;
             tc_txn.alloc_mem();

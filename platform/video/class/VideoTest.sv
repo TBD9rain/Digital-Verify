@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.4
+//  Version : 1.1.5
 //
 //  Description
 //
@@ -22,7 +22,7 @@ class VideoBaseTest extends uvm_test;
     FrameDataEnv #(DATA_WIDTH) data_env;
     FrameRowCtrlEnv #(DATA_WIDTH) format_env;
 
-    video_timing_t  video_timing;
+    FrameFormatObj  frame_format;
 
     function new(string name="VideoBaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -31,10 +31,11 @@ class VideoBaseTest extends uvm_test;
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        video_timing = '{1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1};
-        video_timing = '{8, 2, 4, 3, 8, 2, 4, 3, 1, 1};
-        uvm_config_db #(video_timing_t)::set(this, "data_env.*", "video_timing", video_timing);
-        uvm_config_db #(video_timing_t)::set(this, "format_env.*", "video_timing", video_timing);
+        frame_format = FrameFormatObj::type_id::create("frame_format");
+        frame_format.set_frame_format(1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1);
+        frame_format.set_frame_format(8, 2, 4, 3, 8, 2, 4, 3, 1, 1);
+        uvm_config_db #(FrameFormatObj)::set(this, "data_env.*", "frame_format", frame_format);
+        uvm_config_db #(FrameFormatObj)::set(this, "format_env.*", "frame_format", frame_format);
 
         uvm_config_db #(int unsigned)::set(this, "data_env.scb", "ref_latency", 1);
 

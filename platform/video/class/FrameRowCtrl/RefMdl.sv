@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : RefMdl
-//  Version : 1.1.2
+//  Version : 1.1.3
 //
 //  Description
 //
@@ -21,7 +21,7 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
     uvm_blocking_put_port #(TXN) scb_putp;
 
-    video_timing_t  video_timing;
+    FrameFormatObj  frame_format;
 
     function new(string name="FrameRowCtrlRefMdl", uvm_component parent=null);
         super.new(name, parent);
@@ -29,7 +29,7 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
+        if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
             `uvm_fatal("FrameRowCtrlRefMdl", "video timing is not set.")
         end
         scb_putp = new("scb_putp", this);
@@ -43,8 +43,8 @@ class FrameRowCtrlRefMdl extends uvm_component;
         int unsigned j;
 
         //  Sync interval is the first
-        v_total = video_timing.v_sync + video_timing.v_bp + video_timing.v_active + video_timing.v_fp;
-        h_total = video_timing.h_sync + video_timing.h_bp + video_timing.h_active + video_timing.h_fp;
+        v_total = frame_format.v_sync + frame_format.v_bp + frame_format.v_active + frame_format.v_fp;
+        h_total = frame_format.h_sync + frame_format.h_bp + frame_format.h_active + frame_format.h_fp;
 
         forever begin
             for (i = 0; i < v_total; i++) begin
@@ -54,24 +54,24 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
                 for (j = 0; j < h_total; j++) begin
 
-                    if (i < video_timing.v_sync) begin
-                        exp_txn.vsync[j] = video_timing.v_sync_pos ? 1 : 0;
+                    if (i < frame_format.v_sync) begin
+                        exp_txn.vsync[j] = frame_format.v_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.vsync[j] = video_timing.v_sync_pos ? 0 : 1;
+                        exp_txn.vsync[j] = frame_format.v_sync_pos ? 0 : 1;
                     end
 
-                    if (j < video_timing.h_sync) begin
-                        exp_txn.hsync[j] = video_timing.h_sync_pos ? 1 : 0;
+                    if (j < frame_format.h_sync) begin
+                        exp_txn.hsync[j] = frame_format.h_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.hsync[j] = video_timing.h_sync_pos ? 0 : 1;
+                        exp_txn.hsync[j] = frame_format.h_sync_pos ? 0 : 1;
                     end
 
-                    if ((i >= (video_timing.v_sync + video_timing.v_bp)) &&
-                        (i < (video_timing.v_sync + video_timing.v_bp + video_timing.v_active)) &&
-                        (j >= (video_timing.h_sync + video_timing.h_bp)) &&
-                        (j < (video_timing.h_sync + video_timing.h_bp + video_timing.h_active))) begin
+                    if ((i >= (frame_format.v_sync + frame_format.v_bp)) &&
+                        (i < (frame_format.v_sync + frame_format.v_bp + frame_format.v_active)) &&
+                        (j >= (frame_format.h_sync + frame_format.h_bp)) &&
+                        (j < (frame_format.h_sync + frame_format.h_bp + frame_format.h_active))) begin
                         exp_txn.de[j] = 1;
                     end
                     else begin

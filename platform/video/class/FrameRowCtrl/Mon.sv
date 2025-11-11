@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.1.2
+//  Version : 1.1.3
 //
 //  Description
 //
@@ -24,7 +24,7 @@ class FrameRowCtrlOutMon #(
 
     virtual interface video_if.mon_mp vif;
 
-    video_timing_t video_timing;
+    FrameFormatObj frame_format;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -37,7 +37,7 @@ class FrameRowCtrlOutMon #(
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
             `uvm_fatal("FrameRowCtrlOutMon", "Virtual interface is not set.")
         end
-        if (!uvm_config_db #(video_timing_t)::get(this, "", "video_timing", video_timing)) begin
+        if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
             `uvm_fatal("FrameRowCtrlOutMon", "video timing is not set.")
         end
         ap = new("ap", this);
@@ -68,7 +68,7 @@ class FrameRowCtrlOutMon #(
         output TXN txn;
         int unsigned h_total;
 
-        h_total = video_timing.h_active + video_timing.h_fp + video_timing.h_sync + video_timing.h_bp;
+        h_total = frame_format.h_active + frame_format.h_fp + frame_format.h_sync + frame_format.h_bp;
 
         txn = TXN::type_id::create("txn");
         txn.h_total = h_total;
