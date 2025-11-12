@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.1.3
+//  Version : 1.1.4
 //
 //  Description
 //
@@ -46,13 +46,13 @@ class FrameRowCtrlOutMon #(
     task main_phase(uvm_phase phase);
         TXN txn;
 
-        bit vsync_curr;
         bit vsync_prev;
+        bit vsync_curr;
 
         @vif.cb;
-        vsync_curr = vif.cb.vout_vsync;
         vsync_prev = vif.cb.vout_vsync;
-        while (!(vsync_prev == 0 && vsync_curr == 1)) begin
+        vsync_curr = vif.cb.vout_vsync;
+        while (!(vsync_prev == ~frame_format.v_sync_pos && vsync_curr == frame_format.v_sync_pos)) begin
             @vif.cb;
             vsync_prev = vsync_curr;
             vsync_curr = vif.cb.vout_vsync;
