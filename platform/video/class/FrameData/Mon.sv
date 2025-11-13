@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -34,10 +34,10 @@ class FrameDataInMon #(
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
-            `uvm_fatal("FrameDataInMon", "Virtual interface is not set.")
+            `uvm_fatal("FrameDataInMon", "virtual interface is not set.")
         end
         if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameDataInMon", "video timing is not set.")
+            `uvm_fatal("FrameDataInMon", "frame format is not set.")
         end
         ap = new("ap", this);
     endfunction
@@ -95,10 +95,10 @@ class FrameDataOutMon #(
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
-            `uvm_fatal("FrameDataOutMon", "Virtual interface is not set.")
+            `uvm_fatal("FrameDataOutMon", "virtual interface is not set.")
         end
         if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameDataOutMon", "video timing is not set.")
+            `uvm_fatal("FrameDataOutMon", "frame format is not set.")
         end
         ap = new("ap", this);
     endfunction

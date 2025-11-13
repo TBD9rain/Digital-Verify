@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.5
+//  Version : 1.1.6
 //
 //  Description
 //
@@ -22,7 +22,7 @@ class VideoBaseTest extends uvm_test;
     FrameDataEnv #(DATA_WIDTH) data_env;
     FrameRowCtrlEnv #(DATA_WIDTH) format_env;
 
-    FrameFormatObj  frame_format;
+    FrameFormatObj frame_format;
 
     function new(string name="VideoBaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -30,12 +30,6 @@ class VideoBaseTest extends uvm_test;
 
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-
-        frame_format = FrameFormatObj::type_id::create("frame_format");
-        frame_format.set_frame_format(1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1);
-        frame_format.set_frame_format(8, 2, 4, 3, 8, 2, 4, 3, 1, 1);
-        uvm_config_db #(FrameFormatObj)::set(this, "data_env.*", "frame_format", frame_format);
-        uvm_config_db #(FrameFormatObj)::set(this, "format_env.*", "frame_format", frame_format);
 
         uvm_config_db #(int unsigned)::set(this, "data_env.scb", "ref_latency", 1);
 
@@ -46,6 +40,14 @@ class VideoBaseTest extends uvm_test;
             "data_env.i_agt.sqr.main_phase",
             "default_sequence",
             FrameDataBaseSeq #(DATA_WIDTH)::type_id::get());
+
+        frame_format = FrameFormatObj::type_id::create("frame_format");
+        frame_format.set_frame_format(1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1);
+        frame_format.set_frame_format(8, 2, 4, 3, 8, 2, 4, 3, 1, 1);
+        uvm_config_db #(FrameFormatObj)::set(this, "data_env.*", "frame_format", frame_format);
+        uvm_config_db #(FrameFormatObj)::set(this, "format_env.*", "frame_format", frame_format);
+
+        uvm_config_db #(string)::set(this, "data_env.i_agt.sqr", "frame_data_file_path", "data.bin");
 
         set_report_verbosity_level_hier(UVM_LOW);
     endfunction

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Drv
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -32,10 +32,10 @@ class FrameDataDrv #(
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if(!uvm_config_db #(drv_vif)::get(this, "", "vif", vif)) begin
-            `uvm_fatal("FrameDataDrv", "Virtual interface is not set.")
+            `uvm_fatal("FrameDataDrv", "virtual interface is not set.")
         end
         if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameDataDrv", "video timing is not set.")
+            `uvm_fatal("FrameDataDrv", "frame format is not set.")
         end
     endfunction
 

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.1.4
+//  Version : 1.1.5
 //
 //  Description
 //
@@ -35,10 +35,10 @@ class FrameRowCtrlOutMon #(
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if(!uvm_config_db #(mon_vif)::get(this, "", "vif", vif)) begin
-            `uvm_fatal("FrameRowCtrlOutMon", "Virtual interface is not set.")
+            `uvm_fatal("FrameRowCtrlOutMon", "virtual interface is not set.")
         end
         if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameRowCtrlOutMon", "video timing is not set.")
+            `uvm_fatal("FrameRowCtrlOutMon", "frame format is not set.")
         end
         ap = new("ap", this);
     endfunction

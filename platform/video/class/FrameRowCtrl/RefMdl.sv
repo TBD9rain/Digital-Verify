@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : RefMdl
-//  Version : 1.1.3
+//  Version : 1.1.4
 //
 //  Description
 //
@@ -21,7 +21,7 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
     uvm_blocking_put_port #(TXN) scb_putp;
 
-    FrameFormatObj  frame_format;
+    FrameFormatObj frame_format;
 
     function new(string name="FrameRowCtrlRefMdl", uvm_component parent=null);
         super.new(name, parent);
@@ -30,7 +30,7 @@ class FrameRowCtrlRefMdl extends uvm_component;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameRowCtrlRefMdl", "video timing is not set.")
+            `uvm_fatal("FrameRowCtrlRefMdl", "frame format is not set.")
         end
         scb_putp = new("scb_putp", this);
     endfunction

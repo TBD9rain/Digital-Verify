@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Seq
-//  Version : 1.0.4
+//  Version : 1.0.5
 //
 //  Description
 //
@@ -50,7 +50,7 @@ class FrameDataBaseSeq #(
             tc_txn.prefix_vsync = 0;
             tc_txn.suffix_vsync = 1;
             tc_txn.alloc_mem();
-            tc_txn.read_bin_frame("data.bin");
+            tc_txn.read_bin_frame(p_sequencer.frame_data_file_path);
             `uvm_send(tc_txn)
         end
         uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", 1);
