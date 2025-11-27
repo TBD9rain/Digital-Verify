@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Sqr
-//  Version : 1.0.3
+//  Version : 1.0.4
 //
 //  Description
 //
@@ -14,7 +14,7 @@
 
 class FrameDataSqr #(
     parameter DATA_WIDTH = 8,
-    localparam type REQ = FrameDataTxn
+    localparam type REQ = FrameDataTxn #(DATA_WIDTH)
 ) extends uvm_sequencer #(.REQ (REQ));
 
     `uvm_component_param_utils(FrameDataSqr #(DATA_WIDTH))

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Drv
-//  Version : 1.0.3
+//  Version : 1.0.4
 //
 //  Description
 //
@@ -14,7 +14,7 @@
 
 class FrameDataDrv #(
     parameter int DATA_WIDTH = 8,
-    localparam type REQ = FrameDataTxn
+    localparam type REQ = FrameDataTxn #(DATA_WIDTH)
 ) extends uvm_driver #(.REQ (REQ));
 
     `uvm_component_param_utils(FrameDataDrv #(DATA_WIDTH))
