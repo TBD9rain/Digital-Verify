@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_if
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //
@@ -43,15 +43,10 @@ interface video_if #(
     end
 
     clocking cb @(posedge clk);
-        inout vin_vsync;
-        inout vin_hsync;
-        inout vin_de;
-        inout vin_data;
-
-        input vout_vsync;
-        input vout_hsync;
-        input vout_de;
-        input vout_data;
+        output vin_vsync;
+        output vin_hsync;
+        output vin_de;
+        output vin_data;
 
         input clk_cnt;
     endclocking
@@ -59,20 +54,24 @@ interface video_if #(
     //  driver
     modport drv_mp (
         clocking cb,
-        input rst_n,
-        output vin_vsync,
-        output vin_hsync,
-        output vin_de,
-        output vin_data);
+        input rst_n);
 
     //  monitor
     modport mon_mp (
-        clocking cb,
+        input clk,
         input rst_n,
+
         input vin_vsync,
         input vin_hsync,
         input vin_de,
-        input vin_data);
+        input vin_data,
+
+        input vout_vsync,
+        input vout_hsync,
+        input vout_de,
+        input vout_data,
+
+        input clk_cnt);
 
     //  DUT
     modport dut_mp (

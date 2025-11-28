@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.0.3
+//  Version : 1.0.4
 //
 //  Description
 //
@@ -62,13 +62,13 @@ class FrameDataInMon #(
         pixel_idx = 0;
 
         while (pixel_idx < txn.frame_height*txn.frame_width) begin
-            @vif.cb;
-            if (vif.cb.vin_de) begin
-                txn.frame_data[pixel_idx] = vif.cb.vin_data;
+            @(posedge vif.clk)
+            if (vif.vin_de) begin
+                txn.frame_data[pixel_idx] = vif.vin_data;
                 pixel_idx++;
             end
         end
-        txn.timestamp = vif.cb.clk_cnt;
+        txn.timestamp = vif.clk_cnt;
     endtask
 endclass
 
@@ -123,13 +123,13 @@ class FrameDataOutMon #(
         pixel_idx = 0;
 
         while (pixel_idx < txn.frame_height*txn.frame_width) begin
-            @vif.cb;
-            if (vif.cb.vout_de) begin
-                txn.frame_data[pixel_idx] = vif.cb.vout_data;
+            @(posedge vif.clk);
+            if (vif.vout_de) begin
+                txn.frame_data[pixel_idx] = vif.vout_data;
                 pixel_idx++;
             end
         end
-        txn.timestamp = vif.cb.clk_cnt;
+        txn.timestamp = vif.clk_cnt;
     endtask
 endclass
 

@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Mon
-//  Version : 1.1.5
+//  Version : 1.1.6
 //
 //  Description
 //
@@ -49,13 +49,13 @@ class FrameRowCtrlOutMon #(
         bit vsync_prev;
         bit vsync_curr;
 
-        @vif.cb;
-        vsync_prev = vif.cb.vout_vsync;
-        vsync_curr = vif.cb.vout_vsync;
+        @(posedge vif.clk)
+        vsync_prev = vif.vout_vsync;
+        vsync_curr = vif.vout_vsync;
         while (!(vsync_prev == ~frame_format.v_sync_pos && vsync_curr == frame_format.v_sync_pos)) begin
-            @vif.cb;
+            @(posedge vif.clk)
             vsync_prev = vsync_curr;
-            vsync_curr = vif.cb.vout_vsync;
+            vsync_curr = vif.vout_vsync;
         end
 
         forever begin
@@ -75,10 +75,10 @@ class FrameRowCtrlOutMon #(
         txn.alloc_mem();
 
         for (int i = 0; i < h_total; i++) begin
-            txn.de[i] = vif.cb.vout_de;
-            txn.hsync[i] = vif.cb.vout_hsync;
-            txn.vsync[i] = vif.cb.vout_vsync;
-            @vif.cb;
+            txn.de[i] = vif.vout_de;
+            txn.hsync[i] = vif.vout_hsync;
+            txn.vsync[i] = vif.vout_vsync;
+            @(posedge vif.clk);
         end
     endtask
 endclass
