@@ -1,7 +1,7 @@
 //==================================================================================================
 //
 //  Project         :   Digital Verify Example
-//  Version         :   v1.0.5
+//  Version         :   v1.0.6
 //  Title           :   InMon
 //
 //  Description     :   monitor class definition
@@ -49,14 +49,14 @@ class InMon #(
     task sample_txn;
         output TXN txn;
 
-        @vif.cb;
-        while (vif.cb.data_in_vld !== 1) begin
-            @vif.cb;
+        @(posedge vif.clk);
+        while (vif.data_in_vld !== 1) begin
+            @(posedge vif.clk);
         end
         txn = TXN::type_id::create("txn");
-        txn.addend0 = vif.cb.addend0;
-        txn.addend1 = vif.cb.addend1;
-        txn.timestamp = vif.cb.clk_cnt;
+        txn.addend0 = vif.addend0;
+        txn.addend1 = vif.addend1;
+        txn.timestamp = vif.clk_cnt;
     endtask
 endclass
 
@@ -97,13 +97,13 @@ class OutMon #(
     task sample_txn;
         output TXN txn;
 
-        @vif.cb
-        while (vif.cb.data_out_vld !== 1) begin
-            @vif.cb;
+        @(posedge vif.clk);
+        while (vif.data_out_vld !== 1) begin
+            @(posedge vif.clk);
         end
         txn = TXN::type_id::create("txn");
-        txn.sum = vif.cb.sum;
-        txn.timestamp = vif.cb.clk_cnt;
+        txn.sum = vif.sum;
+        txn.timestamp = vif.clk_cnt;
     endtask
 endclass
 
