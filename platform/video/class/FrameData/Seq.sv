@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Seq
-//  Version : 1.0.5
+//  Version : 1.0.6
 //
 //  Description
 //
@@ -27,38 +27,49 @@ class FrameDataBaseSeq #(
         super.new(name);
     endfunction
 
+    virtual task pre_start();
+        super.pre_start();
+
+        if (starting_phase == null) begin
+            if (get_parent_sequence() != null) begin
+                starting_phase = get_parent_sequence().starting_phase;
+            end
+            else begin
+                `uvm_fatal("FrameDataBaseSeq", "starting_phase is null.")
+            end
+        end
+    endtask
+
     virtual task body();
         REQ tc_txn;
 
-        if (starting_phase != null) begin
-            starting_phase.raise_objection(this);
+        starting_phase.raise_objection(this);
 
-            `uvm_create(tc_txn)
-            //  transaction prepare
-            tc_txn.frame_width = p_sequencer.frame_format.h_active;
-            tc_txn.frame_height = p_sequencer.frame_format.v_active;
-            tc_txn.prefix_vsync = 1;
-            tc_txn.suffix_vsync = 1;
-            tc_txn.alloc_mem();
-            tc_txn.gen_color_bar();
-            `uvm_send(tc_txn)
+        `uvm_create(tc_txn)
+        //  transaction prepare
+        tc_txn.frame_width = p_sequencer.frame_format.h_active;
+        tc_txn.frame_height = p_sequencer.frame_format.v_active;
+        tc_txn.prefix_vsync = 1;
+        tc_txn.suffix_vsync = 1;
+        tc_txn.alloc_mem();
+        tc_txn.gen_color_bar();
+        `uvm_send(tc_txn)
 
-            `uvm_create(tc_txn)
-            //  transaction prepare
-            tc_txn.frame_width = p_sequencer.frame_format.h_active;
-            tc_txn.frame_height = p_sequencer.frame_format.v_active;
-            tc_txn.prefix_vsync = 0;
-            tc_txn.suffix_vsync = 1;
-            tc_txn.alloc_mem();
-            tc_txn.read_bin_frame(p_sequencer.frame_data_file_path);
-            `uvm_send(tc_txn)
-        end
+        `uvm_create(tc_txn)
+        //  transaction prepare
+        tc_txn.frame_width = p_sequencer.frame_format.h_active;
+        tc_txn.frame_height = p_sequencer.frame_format.v_active;
+        tc_txn.prefix_vsync = 0;
+        tc_txn.suffix_vsync = 1;
+        tc_txn.alloc_mem();
+        tc_txn.read_bin_frame(p_sequencer.frame_data_file_path);
+        `uvm_send(tc_txn)
+
         uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", 1);
         //  delay before drop objection
         starting_phase.phase_done.set_drain_time(this, 1000ns);
-        if (starting_phase != null) begin
-            starting_phase.drop_objection(this);
-        end
+
+        starting_phase.drop_objection(this);
     endtask
 endclass
 
