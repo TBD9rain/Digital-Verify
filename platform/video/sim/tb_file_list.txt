@@ -1,3 +1,3 @@
-../video_if.sv
-../class/video_tb_pkg.sv
-../video_tb.sv
+../tb/video_if.sv
+../tb/class/video_tb_pkg.sv
+../tb/video_tb.sv
