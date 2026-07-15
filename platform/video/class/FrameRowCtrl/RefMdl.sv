@@ -2,9 +2,11 @@
 //
 //  Project : Video Verification Platform
 //  Title   : RefMdl
-//  Version : 1.1.4
+//  Version : 1.1.5
 //
 //  Description
+//      Reference model for the row timing.
+//      Horizontal boundaries are expressed in clocks: pixel counts divided by PIXEL_PER_CLOCK.
 //
 //  Additional info
 //
@@ -12,16 +14,19 @@
 //
 //==================================================================================================
 
-class FrameRowCtrlRefMdl extends uvm_component;
+class FrameRowCtrlRefMdl #(
+    parameter int DATA_WIDTH = 8,
+    parameter int PIXEL_PER_CLOCK = 1
+) extends uvm_component;
 
-    `uvm_component_utils(FrameRowCtrlRefMdl)
+    `uvm_component_param_utils(FrameRowCtrlRefMdl #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  variable definition
     typedef FrameRowCtrlTxn TXN;
 
     uvm_blocking_put_port #(TXN) scb_putp;
 
-    FrameFormatObj frame_format;
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
 
     function new(string name="FrameRowCtrlRefMdl", uvm_component parent=null);
         super.new(name, parent);
@@ -29,8 +34,8 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if (!uvm_config_db #(FrameFormatObj)::get(this, "", "frame_format", frame_format)) begin
-            `uvm_fatal("FrameRowCtrlRefMdl", "frame format is not set.")
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("FrameRowCtrlRefMdl", "video configuration is not set.")
         end
         scb_putp = new("scb_putp", this);
     endfunction
@@ -39,12 +44,23 @@ class FrameRowCtrlRefMdl extends uvm_component;
         TXN exp_txn;
         int unsigned v_total;
         int unsigned h_total;
+        int unsigned h_sync_clk;
+        int unsigned h_bp_clk;
+        int unsigned h_active_clk;
+        int unsigned h_fp_clk;
         int unsigned i;
         int unsigned j;
 
-        //  Sync interval is the first
-        v_total = frame_format.v_sync + frame_format.v_bp + frame_format.v_active + frame_format.v_fp;
-        h_total = frame_format.h_sync + frame_format.h_bp + frame_format.h_active + frame_format.h_fp;
+        //  vertical counted in lines
+        v_total = video_cfg.frame_cfg.v_sync + video_cfg.frame_cfg.v_bp +
+            video_cfg.frame_cfg.v_active + video_cfg.frame_cfg.v_fp;
+
+        //  horizontal counted in clocks
+        h_sync_clk   = video_cfg.frame_cfg.h_sync   / PIXEL_PER_CLOCK;
+        h_bp_clk     = video_cfg.frame_cfg.h_bp     / PIXEL_PER_CLOCK;
+        h_active_clk = video_cfg.frame_cfg.h_active / PIXEL_PER_CLOCK;
+        h_fp_clk     = video_cfg.frame_cfg.h_fp     / PIXEL_PER_CLOCK;
+        h_total = h_sync_clk + h_bp_clk + h_active_clk + h_fp_clk;
 
         forever begin
             for (i = 0; i < v_total; i++) begin
@@ -54,24 +70,24 @@ class FrameRowCtrlRefMdl extends uvm_component;
 
                 for (j = 0; j < h_total; j++) begin
 
-                    if (i < frame_format.v_sync) begin
-                        exp_txn.vsync[j] = frame_format.v_sync_pos ? 1 : 0;
+                    if (i < video_cfg.frame_cfg.v_sync) begin
+                        exp_txn.vsync[j] = video_cfg.frame_cfg.v_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.vsync[j] = frame_format.v_sync_pos ? 0 : 1;
+                        exp_txn.vsync[j] = video_cfg.frame_cfg.v_sync_pos ? 0 : 1;
                     end
 
-                    if (j < frame_format.h_sync) begin
-                        exp_txn.hsync[j] = frame_format.h_sync_pos ? 1 : 0;
+                    if (j < h_sync_clk) begin
+                        exp_txn.hsync[j] = video_cfg.frame_cfg.h_sync_pos ? 1 : 0;
                     end
                     else begin
-                        exp_txn.hsync[j] = frame_format.h_sync_pos ? 0 : 1;
+                        exp_txn.hsync[j] = video_cfg.frame_cfg.h_sync_pos ? 0 : 1;
                     end
 
-                    if ((i >= (frame_format.v_sync + frame_format.v_bp)) &&
-                        (i < (frame_format.v_sync + frame_format.v_bp + frame_format.v_active)) &&
-                        (j >= (frame_format.h_sync + frame_format.h_bp)) &&
-                        (j < (frame_format.h_sync + frame_format.h_bp + frame_format.h_active))) begin
+                    if ((i >= (video_cfg.frame_cfg.v_sync + video_cfg.frame_cfg.v_bp)) &&
+                        (i < (video_cfg.frame_cfg.v_sync + video_cfg.frame_cfg.v_bp + video_cfg.frame_cfg.v_active)) &&
+                        (j >= (h_sync_clk + h_bp_clk)) &&
+                        (j < (h_sync_clk + h_bp_clk + h_active_clk))) begin
                         exp_txn.de[j] = 1;
                     end
                     else begin
@@ -84,4 +100,3 @@ class FrameRowCtrlRefMdl extends uvm_component;
         end
     endtask
 endclass
-

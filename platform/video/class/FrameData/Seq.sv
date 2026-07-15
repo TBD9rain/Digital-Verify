@@ -2,9 +2,12 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Seq
-//  Version : 1.0.6
+//  Version : 1.0.7
 //
 //  Description
+//      Sends a color-bar frame followed by a frame read from a binary file.
+//      Video timing and the frame data file path are taken from the VideoConfig held by the
+//      sequencer.
 //
 //  Additional info
 //
@@ -14,14 +17,16 @@
 
 class FrameDataBaseSeq #(
     parameter int DATA_WIDTH = 8,
+    parameter int PIXEL_PER_CLOCK = 1,
     localparam type REQ = FrameDataTxn #(DATA_WIDTH)
 ) extends uvm_sequence #(.REQ (REQ));
 
-    `uvm_object_param_utils(FrameDataBaseSeq #(DATA_WIDTH))
+    `uvm_object_param_utils(FrameDataBaseSeq #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  handler to sequencer
-    `uvm_declare_p_sequencer(FrameDataSqr)
+    `uvm_declare_p_sequencer(FrameDataSqr #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
 
     function new(string name="FrameDataBaseSeq");
         super.new(name);
@@ -30,46 +35,37 @@ class FrameDataBaseSeq #(
     virtual task pre_start();
         super.pre_start();
 
-        if (starting_phase == null) begin
-            if (get_parent_sequence() != null) begin
-                starting_phase = get_parent_sequence().starting_phase;
-            end
-            else begin
-                `uvm_fatal("FrameDataBaseSeq", "starting_phase is null.")
-            end
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(p_sequencer, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("FrameDataBaseSeq", "video configuration is not set.")
         end
     endtask
 
     virtual task body();
-        REQ tc_txn;
+        REQ txn;
 
-        starting_phase.raise_objection(this);
+        //  color-bar frame
+        txn = REQ::type_id::create("txn");
+        start_item(txn);
+        txn.frame_width = video_cfg.frame_cfg.h_active;
+        txn.frame_height = video_cfg.frame_cfg.v_active;
+        txn.prefix_vsync = 1;
+        txn.suffix_vsync = 1;
+        txn.alloc_mem();
+        txn.gen_color_bar();
+        finish_item(txn);
 
-        `uvm_create(tc_txn)
-        //  transaction prepare
-        tc_txn.frame_width = p_sequencer.frame_format.h_active;
-        tc_txn.frame_height = p_sequencer.frame_format.v_active;
-        tc_txn.prefix_vsync = 1;
-        tc_txn.suffix_vsync = 1;
-        tc_txn.alloc_mem();
-        tc_txn.gen_color_bar();
-        `uvm_send(tc_txn)
+        //  frame read from binary file
+        txn = REQ::type_id::create("txn");
+        start_item(txn);
+        txn.frame_width = video_cfg.frame_cfg.h_active;
+        txn.frame_height = video_cfg.frame_cfg.v_active;
+        txn.prefix_vsync = 0;
+        txn.suffix_vsync = 1;
+        txn.alloc_mem();
+        txn.read_bin_frame(video_cfg.frame_data_file_path);
+        finish_item(txn);
 
-        `uvm_create(tc_txn)
-        //  transaction prepare
-        tc_txn.frame_width = p_sequencer.frame_format.h_active;
-        tc_txn.frame_height = p_sequencer.frame_format.v_active;
-        tc_txn.prefix_vsync = 0;
-        tc_txn.suffix_vsync = 1;
-        tc_txn.alloc_mem();
-        tc_txn.read_bin_frame(p_sequencer.frame_data_file_path);
-        `uvm_send(tc_txn)
-
+        //  notify the row-timing scoreboard that all frames have been sent
         uvm_config_db #(bit)::set(null, "uvm_test_top.*", "frame_data_seq_done", 1);
-        //  delay before drop objection
-        starting_phase.phase_done.set_drain_time(this, 1000ns);
-
-        starting_phase.drop_objection(this);
     endtask
 endclass
-

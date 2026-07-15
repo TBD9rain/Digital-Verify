@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Agt
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -13,15 +13,18 @@
 //==================================================================================================
 
 class FrameRowCtrlOutAgt #(
-    parameter int DATA_WIDTH = 8
+    parameter int DATA_WIDTH = 8,
+    parameter int PIXEL_PER_CLOCK = 1
 ) extends uvm_agent;
 
-    `uvm_component_param_utils(FrameRowCtrlOutAgt #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameRowCtrlOutAgt #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  variable definition
     typedef FrameRowCtrlTxn TXN;
 
-    FrameRowCtrlOutMon #(DATA_WIDTH) mon;
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
+
+    FrameRowCtrlOutMon #(DATA_WIDTH, PIXEL_PER_CLOCK) mon;
 
     uvm_analysis_port #(TXN) ap;
 
@@ -31,7 +34,13 @@ class FrameRowCtrlOutAgt #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        mon = FrameRowCtrlOutMon #(DATA_WIDTH)::type_id::create("mon", this);
+
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("FrameRowCtrlOutAgt", "video configuration is not set.")
+        end
+
+        mon = FrameRowCtrlOutMon #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("mon", this);
+        uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "mon", "video_cfg", video_cfg);
         ap = new("ap", this);
     endfunction
 

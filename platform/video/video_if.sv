@@ -2,9 +2,13 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_if
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
+//      Video interface parameterized by pixels-per-clock.
+//      The pixel data is a packed vector of PIXEL_PER_CLOCK {R, G, B} words, so it connects to a
+//      plain Verilog DUT port. Pixel k occupies bits [k*3*DATA_WIDTH +: 3*DATA_WIDTH].
+//      The control signals (vsync / hsync / de) qualify the whole clock and remain scalar.
 //
 //  Additional info
 //
@@ -14,7 +18,8 @@
 
 interface video_if #(
     //  channel width of R, G, or B
-    parameter DATA_WIDTH = 8)
+    parameter DATA_WIDTH = 8,
+    parameter PIXEL_PER_CLOCK = 1)
 (
     input logic clk,
     input logic rst_n);
@@ -23,12 +28,12 @@ interface video_if #(
     logic vin_vsync = 0;
     logic vin_hsync = 0;
     logic vin_de = 0;
-    logic [3*DATA_WIDTH - 1: 0] vin_data = 0;
+    logic [PIXEL_PER_CLOCK*3*DATA_WIDTH - 1: 0] vin_pix;
 
     logic vout_vsync;
     logic vout_hsync;
     logic vout_de;
-    logic [3*DATA_WIDTH - 1: 0] vout_data;
+    logic [PIXEL_PER_CLOCK*3*DATA_WIDTH - 1: 0] vout_pix;
 
     //  clock counter for time stamp
     longint unsigned clk_cnt;
@@ -46,7 +51,7 @@ interface video_if #(
         output vin_vsync;
         output vin_hsync;
         output vin_de;
-        output vin_data;
+        output vin_pix;
 
         input clk_cnt;
     endclocking
@@ -64,16 +69,16 @@ interface video_if #(
         input vin_vsync,
         input vin_hsync,
         input vin_de,
-        input vin_data,
+        input vin_pix,
 
         input vout_vsync,
         input vout_hsync,
         input vout_de,
-        input vout_data,
+        input vout_pix,
 
         input clk_cnt);
 
-    //  DUT
+    //  DUT (a Verilog DUT connects via explicit signal port connections in the TB, not this modport)
     modport dut_mp (
         input clk,
         input rst_n,
@@ -81,11 +86,10 @@ interface video_if #(
         input vin_vsync,
         input vin_hsync,
         input vin_de,
-        input vin_data,
+        input vin_pix,
 
         output vout_vsync,
         output vout_hsync,
         output vout_de,
-        output vout_data);
+        output vout_pix);
 endinterface
-

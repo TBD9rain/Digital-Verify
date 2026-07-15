@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_pkg
-//  Version : 1.0.4
+//  Version : 1.0.5
 //
 //  Description
 //
@@ -17,8 +17,8 @@ package video_pkg;
 `include "uvm_macros.svh"
 import uvm_pkg::*;
 
-
-`include "FrameFormatObj.sv"
+`include "FrameConfig.sv"
+`include "VideoConfig.sv"
 
 `include "FrameData/Txn.sv"
 `include "FrameData/Sqr.sv"

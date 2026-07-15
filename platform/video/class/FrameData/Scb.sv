@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Scb
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -13,10 +13,11 @@
 //==================================================================================================
 
 class FrameDataScb #(
-    parameter int DATA_WIDTH = 8
+    parameter int DATA_WIDTH = 8,
+    parameter int PIXEL_PER_CLOCK = 1
 ) extends uvm_scoreboard;
 
-    `uvm_component_param_utils(FrameDataScb #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameDataScb #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  variable definition
     typedef FrameDataTxn #(DATA_WIDTH) TXN;
@@ -24,6 +25,8 @@ class FrameDataScb #(
     uvm_blocking_get_port #(TXN) imon_getp;
     uvm_blocking_get_port #(TXN) omon_getp;
     uvm_blocking_get_port #(TXN) mdl_getp;
+
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
 
     int unsigned ref_latency = 0;
 
@@ -33,9 +36,10 @@ class FrameDataScb #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if (!uvm_config_db #(int unsigned)::get(this, "", "ref_latency", ref_latency)) begin
-            `uvm_fatal("FrameDataScb", "Reference latency is not set.")
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("FrameDataScb", "video configuration is not set.")
         end
+        ref_latency = video_cfg.ref_latency;
         imon_getp = new("imon_getp", this);
         omon_getp = new("omon_getp", this);
         mdl_getp = new("mdl_getp", this);
@@ -129,4 +133,3 @@ class FrameDataScb #(
         end
     endfunction
 endclass
-

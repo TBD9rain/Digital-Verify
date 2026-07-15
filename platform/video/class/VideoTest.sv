@@ -2,9 +2,14 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoTest
-//  Version : 1.1.6
+//  Version : 1.2.0
 //
 //  Description
+//      Base video test. Obtains the VideoConfig from the TB, fills in the FrameConfig, frame data
+//      file, expected latency and driver activeness, distributes it to each environment, and starts
+//      the frame data sequence on the input sequencer.
+//      Environments are specialized on the local PIXEL_PER_CLOCK, which must match the video_tb
+//      parameter of the same name.
 //
 //  Additional info
 //
@@ -17,12 +22,13 @@ class VideoBaseTest extends uvm_test;
     `uvm_component_utils(VideoBaseTest)
 
     localparam DATA_WIDTH = 8;
+    localparam PIXEL_PER_CLOCK = 1;
 
     //  variable definition
-    FrameDataEnv #(DATA_WIDTH) data_env;
-    FrameRowCtrlEnv #(DATA_WIDTH) format_env;
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
 
-    FrameFormatObj frame_format;
+    FrameDataEnv #(DATA_WIDTH, PIXEL_PER_CLOCK) data_env;
+    FrameRowCtrlEnv #(DATA_WIDTH, PIXEL_PER_CLOCK) format_env;
 
     function new(string name="VideoBaseTest", uvm_component parent=null);
         super.new(name, parent);
@@ -31,26 +37,45 @@ class VideoBaseTest extends uvm_test;
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        uvm_config_db #(int unsigned)::set(this, "data_env.scb", "ref_latency", 1);
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("VideoBaseTest", "video configuration is not set.")
+        end
 
-        data_env = FrameDataEnv #(DATA_WIDTH)::type_id::create("data_env", this);
-        format_env = FrameRowCtrlEnv #(DATA_WIDTH)::type_id::create("format_env", this);
+        //  frame timing (small frame for simulation; horizontal timing kept even so that
+        //  PIXEL_PER_CLOCK up to 2 divides evenly)
+        video_cfg.frame_cfg = FrameConfig::type_id::create("frame_cfg");
+        video_cfg.frame_cfg.set_frame_format(8, 2, 4, 6, 8, 2, 4, 6, 1, 1);
+        video_cfg.frame_data_file_path = "data.bin";
+        video_cfg.ref_latency = 1;
+        video_cfg.video_drv_en = UVM_ACTIVE;
+        video_cfg.validate();
 
-        uvm_config_db#(uvm_object_wrapper)::set(this,
-            "data_env.i_agt.sqr.main_phase",
-            "default_sequence",
-            FrameDataBaseSeq #(DATA_WIDTH)::type_id::get());
+        //  distribute the configuration to each environment
+        uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "data_env", "video_cfg", video_cfg);
+        uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "format_env", "video_cfg", video_cfg);
 
-        frame_format = FrameFormatObj::type_id::create("frame_format");
-        frame_format.set_frame_format(1920, 88, 44, 148, 1080, 4, 5, 36, 1, 1);
-        frame_format.set_frame_format(8, 2, 4, 3, 8, 2, 4, 3, 1, 1);
-        uvm_config_db #(FrameFormatObj)::set(this, "data_env.*", "frame_format", frame_format);
-        uvm_config_db #(FrameFormatObj)::set(this, "format_env.*", "frame_format", frame_format);
+        data_env = FrameDataEnv #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("data_env", this);
+        format_env = FrameRowCtrlEnv #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("format_env", this);
 
-        uvm_config_db #(string)::set(this, "data_env.i_agt.sqr", "frame_data_file_path", "data.bin");
+        //  simulation exit due to too many errors
+        uvm_report_server::get_server().set_max_quit_count(20);
 
         set_report_verbosity_level_hier(UVM_LOW);
     endfunction
+
+    virtual task main_phase(uvm_phase phase);
+        FrameDataBaseSeq #(DATA_WIDTH, PIXEL_PER_CLOCK) seq;
+
+        phase.raise_objection(this);
+
+        //  control sequence start
+        seq = FrameDataBaseSeq #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("seq");
+        seq.start(data_env.i_agt.sqr);
+
+        //  delay before drop objection
+        phase.phase_done.set_drain_time(this, 1000ns);
+        phase.drop_objection(this);
+    endtask
 
     virtual function void report_phase(uvm_phase phase);
         uvm_report_server rpt_ser;
@@ -82,4 +107,3 @@ class VideoBaseTest extends uvm_test;
         $stop(2);
     endfunction
 endclass
-

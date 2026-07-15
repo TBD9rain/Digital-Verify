@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_tb
-//  Version : 1.1.2
+//  Version : 1.2.0
 //
 //  Description
 //
@@ -24,6 +24,8 @@ parameter   CLK_HALF_PERIOD     = 10/2;
 
 parameter DATA_WIDTH = 8;
 
+parameter PIXEL_PER_CLOCK = 1;
+
 
 //=====================
 //  PACKAGE IMPORTATION
@@ -43,13 +45,13 @@ bit clk;
 bit rst_n;
 
 video_if #(
-    .DATA_WIDTH (DATA_WIDTH)
+    .DATA_WIDTH      (DATA_WIDTH),
+    .PIXEL_PER_CLOCK (PIXEL_PER_CLOCK)
 ) video_if (
     .clk    (clk),
     .rst_n  (rst_n));
 
-typedef virtual video_if #(DATA_WIDTH).drv_mp drv_vif;
-typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
+VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
 
 
 //===================
@@ -57,7 +59,8 @@ typedef virtual video_if #(DATA_WIDTH).mon_mp mon_vif;
 //===================
 
 video_test #(
-    .DATA_WIDTH (8))
+    .DATA_WIDTH      (DATA_WIDTH),
+    .PIXEL_PER_CLOCK (PIXEL_PER_CLOCK))
 u_dut (
     .clk        (clk),
     .rst_n      (rst_n),
@@ -65,12 +68,12 @@ u_dut (
     .vin_vsync  (video_if.vin_vsync),
     .vin_hsync  (video_if.vin_hsync),
     .vin_de     (video_if.vin_de),
-    .vin_data   (video_if.vin_data),
+    .vin_pix    (video_if.vin_pix),
 
     .vout_vsync (video_if.vout_vsync),
     .vout_hsync (video_if.vout_hsync),
     .vout_de    (video_if.vout_de),
-    .vout_data  (video_if.vout_data));
+    .vout_pix   (video_if.vout_pix));
 
 
 //=====================
@@ -102,15 +105,13 @@ initial begin
     uvm_config_db #(int)::set(null, "", "recording_detail", 0);
     uvm_config_db #(uvm_bitstream_t)::set(null, "", "recording_detail", 0);
 
-    uvm_config_db #(drv_vif)::set(null, "uvm_test_top.data_env.i_agt.drv", "vif", video_if);
-    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.data_env.i_agt.mon", "vif", video_if);
-    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.data_env.o_agt.mon", "vif", video_if);
-    uvm_config_db #(mon_vif)::set(null, "uvm_test_top.format_env.o_agt.mon", "vif", video_if);
-end
+    video_cfg = VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("video_cfg");
+    video_cfg.vif = video_if;
+    video_cfg.pixel_per_clock = PIXEL_PER_CLOCK;
+    uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(
+        null, "uvm_test_top", "video_cfg", video_cfg);
 
-initial begin
     run_test("VideoBaseTest");
 end
 
 endmodule
-

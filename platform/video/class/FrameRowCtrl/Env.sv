@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Env
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -13,17 +13,22 @@
 //==================================================================================================
 
 class FrameRowCtrlEnv #(
-    parameter int DATA_WIDTH = 8
+    parameter int DATA_WIDTH = 8,
+    parameter int PIXEL_PER_CLOCK = 1
 ) extends uvm_env;
 
-    `uvm_component_param_utils(FrameRowCtrlEnv #(DATA_WIDTH))
+    `uvm_component_param_utils(FrameRowCtrlEnv #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  variable definition
     typedef FrameRowCtrlTxn TXN;
 
-    FrameRowCtrlOutAgt #(DATA_WIDTH) o_agt;
-    FrameRowCtrlRefMdl mdl;
+    VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
+
+    FrameRowCtrlOutAgt #(DATA_WIDTH, PIXEL_PER_CLOCK) o_agt;
+    FrameRowCtrlRefMdl #(DATA_WIDTH, PIXEL_PER_CLOCK) mdl;
     FrameRowCtrlScb scb;
+
+    bit scb_en = 0;
 
     uvm_tlm_analysis_fifo #(TXN) oagt_scb_fifo;
     uvm_tlm_fifo #(TXN) mdl_scb_fifo;
@@ -34,9 +39,22 @@ class FrameRowCtrlEnv #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        o_agt = FrameRowCtrlOutAgt #(DATA_WIDTH)::type_id::create("o_agt", this);
-        mdl = FrameRowCtrlRefMdl::type_id::create("mdl", this);
+
+        if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
+            `uvm_fatal("FrameRowCtrlEnv", "video configuration is not set.")
+        end
+        scb_en = video_cfg.scb_en;
+
+        o_agt = FrameRowCtrlOutAgt #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("o_agt", this);
+        uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "o_agt", "video_cfg", video_cfg);
+
+        if (!scb_en) begin
+            return;
+        end
+
+        mdl = FrameRowCtrlRefMdl #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("mdl", this);
         scb = FrameRowCtrlScb::type_id::create("scb", this);
+        uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "mdl", "video_cfg", video_cfg);
 
         oagt_scb_fifo = new("oagt_scb_fifo", this);
         mdl_scb_fifo = new("mdl_scb_fifo", this);
@@ -44,6 +62,11 @@ class FrameRowCtrlEnv #(
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
+
+        if (!scb_en) begin
+            return;
+        end
+
         o_agt.ap.connect(oagt_scb_fifo.analysis_export);
         scb.omon_getp.connect(oagt_scb_fifo.blocking_get_export);
 
