@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoConfig
-//  Version : 1.0.0
+//  Version : 1.0.1
 //
 //  Description
 //      Central video configuration object.
@@ -48,6 +48,9 @@ class VideoConfig #(
 
     //  scoreboard enable
     bit scb_en = 1;
+
+    //  coverage collector enable
+    bit cov_en = 1;
 
 
     //--------

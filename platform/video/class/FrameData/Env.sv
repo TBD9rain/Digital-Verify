@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Env
-//  Version : 1.0.2
+//  Version : 1.0.3
 //
 //  Description
 //
@@ -26,11 +26,14 @@ class FrameDataEnv #(
 
     FrameDataInAgt #(DATA_WIDTH, PIXEL_PER_CLOCK) i_agt;
     FrameDataOutAgt #(DATA_WIDTH, PIXEL_PER_CLOCK) o_agt;
+    FrameDataCov #(DATA_WIDTH, PIXEL_PER_CLOCK) cov;
     FrameDataRefMdl #(DATA_WIDTH) mdl;
     FrameDataScb #(DATA_WIDTH, PIXEL_PER_CLOCK) scb;
 
     bit scb_en = 0;
+    bit cov_en = 0;
 
+    uvm_tlm_analysis_fifo #(TXN) cov_sti_fifo;
     uvm_tlm_analysis_fifo #(TXN) iagt_mdl_fifo;
     uvm_tlm_analysis_fifo #(TXN) iagt_scb_fifo;
     uvm_tlm_analysis_fifo #(TXN) oagt_scb_fifo;
@@ -47,12 +50,18 @@ class FrameDataEnv #(
             `uvm_fatal("FrameDataEnv", "video configuration is not set.")
         end
         scb_en = video_cfg.scb_en;
+        cov_en = video_cfg.cov_en;
 
         i_agt = FrameDataInAgt #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("i_agt", this);
         uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "i_agt", "video_cfg", video_cfg);
 
         o_agt = FrameDataOutAgt #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("o_agt", this);
         uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "o_agt", "video_cfg", video_cfg);
+
+        if (cov_en) begin
+            cov = FrameDataCov #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("cov", this);
+            cov_sti_fifo = new("cov_sti_fifo", this);
+        end
 
         if (!scb_en) begin
             return;
@@ -70,6 +79,11 @@ class FrameDataEnv #(
 
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
+
+        if (cov_en) begin
+            i_agt.ap.connect(cov_sti_fifo.analysis_export);
+            cov.imon_getp.connect(cov_sti_fifo.blocking_get_export);
+        end
 
         if (!scb_en) begin
             return;
