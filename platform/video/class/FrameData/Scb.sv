@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Scb
-//  Version : 1.0.3
+//  Version : 1.1.0
 //
 //  Description
 //
@@ -20,13 +20,14 @@ class FrameDataScb #(
     `uvm_component_param_utils(FrameDataScb #(DATA_WIDTH, PIXEL_PER_CLOCK))
 
     //  variable definition
-    typedef FrameDataTxn #(DATA_WIDTH) TXN;
-
-    uvm_blocking_get_port #(TXN) imon_getp;
-    uvm_blocking_get_port #(TXN) omon_getp;
-    uvm_blocking_get_port #(TXN) mdl_getp;
+    typedef FrameDataTxn #(DATA_WIDTH) ITXN;
+    typedef FrameDataTxn #(DATA_WIDTH) OTXN;
 
     VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK) video_cfg;
+
+    uvm_nonblocking_get_port #(ITXN) imon_getp;
+    uvm_blocking_get_port #(OTXN) omon_getp;
+    uvm_nonblocking_get_port #(OTXN) mdl_getp;
 
     int unsigned ref_latency = 0;
 
@@ -36,93 +37,76 @@ class FrameDataScb #(
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+
         if (!uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::get(this, "", "video_cfg", video_cfg)) begin
             `uvm_fatal("FrameDataScb", "video configuration is not set.")
         end
         ref_latency = video_cfg.ref_latency;
+
         imon_getp = new("imon_getp", this);
         omon_getp = new("omon_getp", this);
         mdl_getp = new("mdl_getp", this);
     endfunction
 
     task main_phase(uvm_phase phase);
-        TXN itxn;
-        TXN otxn;
+        ITXN itxn;
+        OTXN otxn;
 
-        TXN stimulus_input;
-        TXN expected_output;
-        TXN actual_output;
-
-        bit imon_txn_got;
-        bit ref_mdl_txn_got;
+        ITXN sti_itxn;
+        OTXN exp_otxn;
+        OTXN obs_otxn;
 
         forever begin
-            actual_output = TXN::type_id::create("actual_output");
+            obs_otxn = OTXN::type_id::create("obs_otxn");
             omon_getp.get(otxn);
-            actual_output.copy(otxn);
+            obs_otxn.copy(otxn);
 
-            //  get txn from input monitor
-            imon_txn_got = 0;
-            fork
-                begin
-                    imon_getp.get(itxn);
-                    imon_txn_got = 1;
-                end
-                begin
-                    #1;
-                    if (!imon_txn_got) begin
-                        `uvm_fatal("FrameDataScb", "no input for DUT output.")
-                    end
-                end
-            join_any
+            if (imon_getp.try_get(itxn)) begin
+                sti_itxn = ITXN::type_id::create("sti_itxn");
+                sti_itxn.copy(itxn);
+            end
+            else begin
+                `uvm_fatal("FrameDataScb", "no input for DUT output.")
+            end
 
-            stimulus_input = TXN::type_id::create("stimulus_input");
-            stimulus_input.copy(itxn);
+            if (mdl_getp.try_get(otxn)) begin
+                exp_otxn = OTXN::type_id::create("exp_otxn");
+                exp_otxn.copy(otxn);
+            end
+            else begin
+                `uvm_fatal("FrameDataScb", "no expected output for DUT output.")
+            end
 
-            //  get txn from reference model
-            ref_mdl_txn_got = 0;
-            fork
-                begin
-                    mdl_getp.get(itxn);
-                    ref_mdl_txn_got = 1;
-                end
-                begin
-                    #1;
-                    if (!ref_mdl_txn_got) begin
-                        `uvm_fatal("FrameDataScb", "no expected output for DUT output.")
-                    end
-                end
-            join_any
-
-            expected_output = TXN::type_id::create("expected_output");
-            expected_output.copy(otxn);
-
-            //  check DUT output
-            value_check(expected_output, actual_output);
-            latency_check(stimulus_input, actual_output);
+            value_check(sti_itxn, exp_otxn, obs_otxn);
+            latency_check(sti_itxn, obs_otxn);
         end
     endtask
 
-    function void value_check(const ref TXN exp_txn, const ref TXN act_txn);
+    function void value_check(const ref ITXN sti_itxn, const ref OTXN exp_otxn, const ref OTXN obs_otxn);
         bit txn_equal;
 
-        txn_equal = exp_txn.compare(act_txn);
+        txn_equal = exp_otxn.compare(obs_otxn);
         if (txn_equal) begin
             `uvm_info("FrameDataScb", "expected output and actual output match.", UVM_MEDIUM)
         end
         else begin
             `uvm_error("FrameDataScb", "expected output and actual output mismatch.")
-            `uvm_info("FrameDataScb", "expected output:", UVM_NONE)
-            exp_txn.print();
-            `uvm_info("FrameDataScb", "actual output:", UVM_NONE)
-            act_txn.print();
+        end
+
+        if ((get_report_verbosity_level() == UVM_DEBUG) || (!txn_equal)) begin
+            `uvm_info("FrameDataScb", "DUT input:", UVM_NONE)
+            sti_itxn.print();
+            `uvm_info("FrameDataScb", "DUT expected output:", UVM_NONE)
+            exp_otxn.print();
+            `uvm_info("FrameDataScb", "DUT observed output:", UVM_NONE)
+            obs_otxn.print();
         end
     endfunction
 
-    function void latency_check(const ref TXN stm_txn, const ref TXN act_txn);
+    function void latency_check(const ref ITXN sti_itxn, const ref OTXN obs_otxn);
         longint unsigned dut_latency;
 
-        dut_latency = act_txn.timestamp - stm_txn.timestamp;
+        dut_latency = obs_otxn.timestamp - sti_itxn.timestamp;
         if (dut_latency == ref_latency) begin
             `uvm_info("FrameDataScb", "DUT latency is as expected.", UVM_MEDIUM)
         end

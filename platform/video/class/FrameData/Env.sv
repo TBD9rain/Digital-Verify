@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Env
-//  Version : 1.0.4
+//  Version : 1.0.5
 //
 //  Description
 //
@@ -100,7 +100,7 @@ class FrameDataEnv #(
         mdl.imon_getp.connect(iagt_mdl_fifo.blocking_get_export);
 
         i_agt.ap.connect(iagt_scb_fifo.analysis_export);
-        scb.imon_getp.connect(iagt_scb_fifo.blocking_get_export);
+        scb.imon_getp.connect(iagt_scb_fifo.nonblocking_get_export);
 
         if (fault_inject_en) begin
             o_agt.ap.connect(fi.imp);
@@ -112,6 +112,6 @@ class FrameDataEnv #(
         scb.omon_getp.connect(oagt_scb_fifo.blocking_get_export);
 
         mdl.scb_putp.connect(mdl_scb_fifo.blocking_put_export);
-        scb.mdl_getp.connect(mdl_scb_fifo.blocking_get_export);
+        scb.mdl_getp.connect(mdl_scb_fifo.nonblocking_get_export);
     endfunction
 endclass
