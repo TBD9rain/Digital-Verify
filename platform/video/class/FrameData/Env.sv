@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : Env
-//  Version : 1.0.3
+//  Version : 1.0.4
 //
 //  Description
 //
@@ -29,9 +29,11 @@ class FrameDataEnv #(
     FrameDataCov #(DATA_WIDTH, PIXEL_PER_CLOCK) cov;
     FrameDataRefMdl #(DATA_WIDTH) mdl;
     FrameDataScb #(DATA_WIDTH, PIXEL_PER_CLOCK) scb;
+    FrameDataScbFI #(DATA_WIDTH) fi;
 
     bit scb_en = 0;
     bit cov_en = 0;
+    bit fault_inject_en = 0;
 
     uvm_tlm_analysis_fifo #(TXN) cov_sti_fifo;
     uvm_tlm_analysis_fifo #(TXN) iagt_mdl_fifo;
@@ -51,6 +53,7 @@ class FrameDataEnv #(
         end
         scb_en = video_cfg.scb_en;
         cov_en = video_cfg.cov_en;
+        fault_inject_en = video_cfg.fault_inject_en;
 
         i_agt = FrameDataInAgt #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("i_agt", this);
         uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "i_agt", "video_cfg", video_cfg);
@@ -70,6 +73,10 @@ class FrameDataEnv #(
         mdl = FrameDataRefMdl #(DATA_WIDTH)::type_id::create("mdl", this);
         scb = FrameDataScb #(DATA_WIDTH, PIXEL_PER_CLOCK)::type_id::create("scb", this);
         uvm_config_db #(VideoConfig #(DATA_WIDTH, PIXEL_PER_CLOCK))::set(this, "scb", "video_cfg", video_cfg);
+
+        if (fault_inject_en) begin
+            fi = FrameDataScbFI #(DATA_WIDTH)::type_id::create("fi", this);
+        end
 
         iagt_mdl_fifo = new("iagt_mdl_fifo", this);
         iagt_scb_fifo = new("iagt_scb_fifo", this);
@@ -95,7 +102,13 @@ class FrameDataEnv #(
         i_agt.ap.connect(iagt_scb_fifo.analysis_export);
         scb.imon_getp.connect(iagt_scb_fifo.blocking_get_export);
 
-        o_agt.ap.connect(oagt_scb_fifo.analysis_export);
+        if (fault_inject_en) begin
+            o_agt.ap.connect(fi.imp);
+            fi.ap.connect(oagt_scb_fifo.analysis_export);
+        end
+        else begin
+            o_agt.ap.connect(oagt_scb_fifo.analysis_export);
+        end
         scb.omon_getp.connect(oagt_scb_fifo.blocking_get_export);
 
         mdl.scb_putp.connect(mdl_scb_fifo.blocking_put_export);

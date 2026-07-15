@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : VideoConfig
-//  Version : 1.0.1
+//  Version : 1.0.2
 //
 //  Description
 //      Central video configuration object.
@@ -51,6 +51,9 @@ class VideoConfig #(
 
     //  coverage collector enable
     bit cov_en = 1;
+
+    //  fault injection enable
+    bit fault_inject_en = 0;
 
 
     //--------

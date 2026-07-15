@@ -2,7 +2,7 @@
 //
 //  Project : Video Verification Platform
 //  Title   : video_pkg
-//  Version : 1.0.6
+//  Version : 1.0.7
 //
 //  Description
 //
@@ -27,6 +27,7 @@ import uvm_pkg::*;
 `include "FrameData/Agt.sv"
 `include "FrameData/RefMdl.sv"
 `include "FrameData/Scb.sv"
+`include "FrameData/ScbFI.sv"
 `include "FrameData/Cov.sv"
 `include "FrameData/Env.sv"
 `include "FrameData/Seq.sv"
@@ -39,6 +40,7 @@ import uvm_pkg::*;
 `include "FrameRowCtrl/Env.sv"
 
 `include "VideoTest.sv"
+`include "VideoScbTest.sv"
 
 endpackage
 
