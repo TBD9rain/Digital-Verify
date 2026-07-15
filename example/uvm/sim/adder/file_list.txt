@@ -1,4 +1,0 @@
-../../../src/adder.v
-../../tb/adder/class/adder_pkg.sv
-../../tb/adder/adder_if.sv
-../../tb/adder/adder_tb.sv

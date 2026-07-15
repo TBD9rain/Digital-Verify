@@ -1,4 +1,0 @@
-../../../src/*.v
-../../tb/preadd_multi/preadd_multi_if.sv
-../../tb/preadd_multi/preadd_multi_pkg.sv
-../../tb/preadd_multi/preadd_multi_tb.sv

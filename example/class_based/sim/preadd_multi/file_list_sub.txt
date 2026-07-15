@@ -1,3 +1,0 @@
-../../lib/msg_print_pkg.sv
-../../tb/adder/adder_if.sv
-../../tb/adder/adder_pkg.sv
