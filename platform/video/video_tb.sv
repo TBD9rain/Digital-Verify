@@ -34,7 +34,7 @@ parameter PIXEL_PER_CLOCK = 1;
 `include "uvm_macros.svh"
 import uvm_pkg::*;
 
-import video_pkg::*;
+import video_tb_pkg::*;
 
 
 //=====================
