@@ -1,13 +1,13 @@
-# Digital-Verify
+# digital-verify
 
-Digital-Verify is a repository for verification-related work. Currently, it contains a single example,
+digital-verify is a repository for verification-related work. Currently, it contains a single example,
 `example/video`, a UVM (Universal Verification Methodology) SystemVerilog platform that verifies a
 video-stream DUT along two parallel domains: pixel-data integrity and frame/row timing.
 
 ## Repository layout
 
 ```
-Digital-Verify/
+digital-verify/
 ├── README.md
 └── example/                          # Verification examples (more to be added)
     └── video/                        # Video-stream DUT UVM verification platform
